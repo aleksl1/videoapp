@@ -6,4 +6,5 @@ export const text = {
   login_screen_footer_terms_of_service_text: " Terms and Conditions ",
   login_screen_footer_privacy_policy_text: " Privacy Policy",
   login_screen_footer_and_text: "and",
+  search_bar_placeholder: "Search videos",
 };
