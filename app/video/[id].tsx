@@ -58,7 +58,7 @@ export default function VideoDetailScreen() {
     >
       <View style={styles.videoContainer}>
         <Video
-          source={videoData.videoUri}
+          source={{ uri: videoData.videoUri }}
           style={styles.video}
           controls
           resizeMode="contain"
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     padding: SPACING.xl,
   },
   title: {
-    ...fontConfig.xl,
+    ...fontConfig.md,
     color: COLORS.black,
     marginBottom: SPACING.sm,
   },
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     color: COLORS.outline,
   },
   errorText: {
-    ...fontConfig.lg,
+    ...fontConfig.md,
     color: COLORS.outline,
     textAlign: "center",
   },
