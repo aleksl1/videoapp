@@ -1,7 +1,16 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
+import React from "react";
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get("window");
 
 interface CategoryCardProps {
   video: {
@@ -12,21 +21,71 @@ interface CategoryCardProps {
     publishedAt: string;
   };
   onPress: () => void;
+  variant?: "horizontal" | "vertical"; // horizontal for home carousel, vertical for search list
+  style?: ViewStyle;
 }
 
-export default function CategoryCard({ video, onPress }: CategoryCardProps) {
-  const formattedDate = new Date(video.publishedAt).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+export default function CategoryCard({
+  video,
+  onPress,
+  variant = "horizontal",
+  style,
+}: CategoryCardProps) {
+  const [imageError, setImageError] = React.useState(false);
+
+  const formattedDate = new Date(video.publishedAt).toLocaleDateString(
+    "en-US",
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }
+  );
+
+  const isVertical = variant === "vertical";
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Image source={{ uri: video.thumbnailUrl }} style={styles.image} />
-      <View style={styles.textContainer}>
-        <Text style={styles.title} numberOfLines={2}>{video.title}</Text>
-        <Text style={styles.subtitle} numberOfLines={1}>{video.channelTitle}</Text>
+    <TouchableOpacity
+      style={[
+        styles.container,
+        isVertical ? styles.containerVertical : styles.containerHorizontal,
+        style,
+      ]}
+      onPress={onPress}
+    >
+      <View
+        style={[
+          styles.imageContainer,
+          isVertical ? styles.imageVertical : styles.imageHorizontal,
+        ]}
+      >
+        {imageError ? (
+          <View style={styles.placeholderContainer}>
+            <Text style={styles.placeholderText}>📹</Text>
+          </View>
+        ) : (
+          <Image
+            source={{ uri: video.thumbnailUrl }}
+            style={[
+              styles.image,
+              isVertical ? styles.imageVertical : styles.imageHorizontal,
+            ]}
+            onError={() => setImageError(true)}
+          />
+        )}
+      </View>
+      <View
+        style={[
+          styles.textContainer,
+          isVertical && styles.textContainerVertical,
+        ]}
+      >
+        <Text style={styles.title} numberOfLines={2}>
+          {video.title}
+        </Text>
+        <Text style={styles.subtitle} numberOfLines={1}>
+          {video.channelTitle}
+        </Text>
         <Text style={styles.date}>{formattedDate}</Text>
       </View>
     </TouchableOpacity>
@@ -35,30 +94,63 @@ export default function CategoryCard({ video, onPress }: CategoryCardProps) {
 
 const styles = StyleSheet.create({
   container: {
-    width: (screenWidth / 2) + 20, // Approximately 50% + spacing
-    marginRight: 12,
-    backgroundColor: 'white',
+    backgroundColor: COLORS.white,
+  },
+  containerHorizontal: {
+    width: screenWidth / 2 + 20,
+    marginRight: SPACING.md,
+  },
+  containerVertical: {
+    width: "100%",
+    flexDirection: "column",
+    marginBottom: SPACING.lg,
+  },
+  imageContainer: {
+    borderRadius: 8,
+    overflow: "hidden",
+    backgroundColor: COLORS.background,
   },
   image: {
-    width: '100%',
-    height: 200,
     borderRadius: 8,
   },
+  imageHorizontal: {
+    width: "100%",
+    height: 200,
+  },
+  imageVertical: {
+    width: "100%",
+    height: 200,
+    marginBottom: SPACING.sm,
+  },
+  placeholderContainer: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: COLORS.background,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  placeholderText: {
+    fontSize: 40,
+  },
   textContainer: {
-    padding: 8,
+    padding: SPACING.sm,
+  },
+  textContainerVertical: {
+    padding: 0,
+    paddingHorizontal: SPACING.sm,
   },
   title: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    ...fontConfig.md,
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#666',
+    ...fontConfig.sm,
+    color: COLORS.outline,
     marginBottom: 2,
   },
   date: {
-    fontSize: 12,
-    color: '#999',
+    ...fontConfig.sm,
+    color: COLORS.outline,
+    textAlign: "right",
   },
 });
