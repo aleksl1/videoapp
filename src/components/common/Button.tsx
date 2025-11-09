@@ -1,43 +1,40 @@
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import {
+  BORDER_RADIUS,
+  COLORS,
+  fontConfig,
+  SPACING,
+} from "@/src/constants/theme";
+import { Pressable, PressableProps, StyleSheet, Text } from "react-native";
 
-interface ButtonProps {
+interface ButtonProps extends PressableProps {
   title: string;
-  onPress: () => void;
-  variant?: 'primary' | 'secondary';
 }
 
-export default function Button({ title, onPress, variant = 'primary' }: ButtonProps) {
+export default function Button({ title, onPress, ...rest }: ButtonProps) {
   return (
-    <TouchableOpacity
-      style={[styles.button, variant === 'secondary' && styles.secondary]}
+    <Pressable
+      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
       onPress={onPress}
+      {...rest}
     >
-      <Text style={[styles.text, variant === 'secondary' && styles.secondaryText]}>
-        {title}
-      </Text>
-    </TouchableOpacity>
+      <Text style={styles.text}>{title}</Text>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    backgroundColor: '#007AFF',
-    alignItems: 'center',
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    backgroundColor: COLORS.primary,
+    alignItems: "center",
   },
-  secondary: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#007AFF',
+  pressed: {
+    opacity: 0.7,
   },
   text: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  secondaryText: {
-    color: '#007AFF',
+    color: COLORS.white,
+    ...fontConfig.md,
   },
 });
