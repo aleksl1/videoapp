@@ -1,7 +1,20 @@
+import ChannelInfo from "@/src/components/common/ChannelInfo";
+import Chip from "@/src/components/common/Chip";
+import ChannelNameIcon from "@/src/components/icons/ChannelNameIcon";
+import LikesIcon from "@/src/components/icons/LikesIcon";
+import ViewsIcon from "@/src/components/icons/ViewsIcon";
 import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
 import { useLocalSearchParams } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 import Video from "react-native-video";
 
 // Mock video data - in a real app, this would come from an API
@@ -36,12 +49,73 @@ const mockVideoData: Record<
   },
 };
 
+// Details Tab Component
+const DetailsRoute = () => (
+  <ScrollView style={styles.tabContent}>
+    <Text style={styles.sectionTitle}>Description</Text>
+    <Text style={styles.description}>
+      This is a detailed description of the video. In a real application, this
+      would contain information about the video content, the instructor,
+      learning objectives, and other relevant details.
+    </Text>
+    <Text style={styles.sectionTitle}>Statistics</Text>
+    <View style={styles.statisticsContainer}>
+      <Chip
+        icon={<ViewsIcon width={24} height={24} stroke={COLORS.white} />}
+        label="Views"
+        value="13123131231"
+        backgroundColor={COLORS.primary}
+        textColor={COLORS.white}
+      />
+      <Chip
+        icon={<LikesIcon width={24} height={24} stroke={COLORS.white} />}
+        label="Likes"
+        value="32156"
+        backgroundColor={COLORS.primary}
+        textColor={COLORS.white}
+      />
+    </View>
+  </ScrollView>
+);
+
+// Notes Tab Component
+const NotesRoute = () => (
+  <ScrollView style={styles.tabContent}>
+    <Text style={styles.sectionTitle}>My Notes</Text>
+    <Text style={styles.placeholder}>
+      No notes yet. Notes functionality will be implemented here.
+    </Text>
+  </ScrollView>
+);
+
+const renderScene = SceneMap({
+  details: DetailsRoute,
+  notes: NotesRoute,
+});
+
 export default function VideoDetailScreen() {
   const { id } = useLocalSearchParams();
   const insets = useSafeAreaInsets();
+  const layout = useWindowDimensions();
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "details", title: "Details" },
+    { key: "notes", title: "Notes" },
+  ]);
 
   const videoId = Array.isArray(id) ? id[0] : id;
   const videoData = videoId ? mockVideoData[videoId] : null;
+
+  const renderTabBar = (props: any) => (
+    <TabBar
+      {...props}
+      indicatorStyle={styles.indicator}
+      style={styles.tabBar}
+      labelStyle={styles.tabLabel}
+      activeColor={COLORS.primary}
+      inactiveColor={COLORS.outline}
+    />
+  );
 
   if (!videoData) {
     return (
@@ -52,24 +126,39 @@ export default function VideoDetailScreen() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingTop: insets.top }}
-    >
-      <View style={styles.videoContainer}>
-        <Video
-          source={{ uri: videoData.videoUri }}
-          style={styles.video}
-          controls
-          resizeMode="contain"
-        />
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={styles.headerSection}>
+        <View style={styles.videoContainer}>
+          <Video
+            source={{ uri: videoData.videoUri }}
+            style={styles.video}
+            controls
+            resizeMode="contain"
+          />
+        </View>
+
+        <View style={styles.infoContainer}>
+          <Text style={styles.title}>{videoData.title}</Text>
+          <ChannelInfo
+            icon={
+              <ChannelNameIcon width={20} height={20} fill={COLORS.white} />
+            }
+            channelName={videoData.subtitle}
+          />
+        </View>
       </View>
 
-      <View style={styles.infoContainer}>
-        <Text style={styles.title}>{videoData.title}</Text>
-        <Text style={styles.subtitle}>{videoData.subtitle}</Text>
+      {/* TabView Component - Takes up remaining space */}
+      <View style={styles.tabViewContainer}>
+        <TabView
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{ width: layout.width }}
+          renderTabBar={renderTabBar}
+        />
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -77,6 +166,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
+  },
+  headerSection: {
+    // flex: 0,
+  },
+  tabViewContainer: {
+    flex: 2,
   },
   videoContainer: {
     width: "100%",
@@ -95,13 +190,48 @@ const styles = StyleSheet.create({
     color: COLORS.black,
     marginBottom: SPACING.sm,
   },
-  subtitle: {
-    ...fontConfig.md,
-    color: COLORS.outline,
-  },
   errorText: {
     ...fontConfig.md,
     color: COLORS.outline,
     textAlign: "center",
+  },
+  tabBar: {
+    backgroundColor: COLORS.white,
+  },
+  indicator: {
+    backgroundColor: COLORS.primary,
+    height: 3,
+  },
+  tabLabel: {
+    ...fontConfig.md,
+    fontWeight: "600",
+    textTransform: "none",
+  },
+  tabContent: {
+    flex: 1,
+    padding: SPACING.xl,
+  },
+  sectionTitle: {
+    ...fontConfig.xxl,
+    color: COLORS.black,
+    fontWeight: "600",
+    marginBottom: SPACING.md,
+    marginTop: SPACING.md,
+  },
+  description: {
+    ...fontConfig.md,
+    color: COLORS.black,
+    lineHeight: 24,
+    marginBottom: SPACING.md,
+  },
+  placeholder: {
+    ...fontConfig.md,
+    color: COLORS.outline,
+    fontStyle: "italic",
+  },
+  statisticsContainer: {
+    flexDirection: "row",
+    gap: SPACING.md,
+    marginBottom: SPACING.md,
   },
 });
