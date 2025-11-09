@@ -3,24 +3,42 @@ import SettingsIcon from "@/src/components/icons/SettingsIcon";
 import SearchBar from "@/src/components/search/SearchBar";
 import { VIDEO_CATEGORIES } from "@/src/constants/categories";
 import { COLORS, SPACING } from "@/src/constants/theme";
-import { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { router } from "expo-router";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const insets = useSafeAreaInsets();
+  const searchBarHeight = 2 * SPACING.md + 24;
+  const headerHeight = insets.top + searchBarHeight;
 
   return (
     <View style={styles.container}>
       <View
-        style={styles.searchHeader}
-        onLayout={(event) => setHeaderHeight(event.nativeEvent.layout.height)}
+        style={[
+          styles.searchHeader,
+          { paddingTop: insets.top, paddingHorizontal: SPACING.xl },
+        ]}
       >
-        <SearchBar
-          value=""
-          onChangeText={() => {}}
-          onSubmit={() => {}}
-          RightIcon={<SettingsIcon height={32} width={32} />}
-        />
+        <View style={styles.searchRow}>
+          <Pressable
+            style={styles.searchPressable}
+            onPress={() => router.push("/search")}
+          >
+            <SearchBar
+              value=""
+              onChangeText={() => {}}
+              onSubmit={() => {}}
+              editable={false}
+            />
+          </Pressable>
+          <Pressable
+            style={styles.settingsPressable}
+            onPress={() => router.push("/settings")}
+          >
+            <SettingsIcon height={32} width={32} />
+          </Pressable>
+        </View>
       </View>
       <ScrollView
         style={styles.scrollView}
@@ -70,9 +88,18 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 1,
-    paddingTop: SPACING.xxxl,
-    paddingHorizontal: SPACING.xl,
     backgroundColor: COLORS.white,
+  },
+  searchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.md,
+  },
+  searchPressable: {
+    flex: 1,
+  },
+  settingsPressable: {
+    padding: SPACING.sm,
   },
   scrollContent: {
     flexGrow: 1,

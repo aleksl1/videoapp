@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import CategoryCard from "./CategoryCard";
@@ -10,8 +11,7 @@ interface CategoryListProps {
 
 export default function CategoryList({ category, videos }: CategoryListProps) {
   const handleShowMore = () => {
-    // TODO: Navigate to category details
-    console.log(`Show more for ${category}`);
+    router.push(`/search?category=${category}`);
   };
 
   const renderCategoryCard = ({ item }: { item: any }) => (
