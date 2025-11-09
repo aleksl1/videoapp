@@ -13,10 +13,7 @@ export default function RootLayout() {
         name="settings"
         options={{ headerShown: true, title: "Settings" }}
       />
-      <Stack.Screen
-        name="video/[id]"
-        options={{ headerShown: true, title: "Video" }}
-      />
+      <Stack.Screen name="video/[id]" options={{ headerShown: false }} />
     </Stack>
   );
 }

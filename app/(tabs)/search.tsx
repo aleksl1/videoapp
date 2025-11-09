@@ -1,6 +1,7 @@
 import CategoryCard from "@/src/components/category/CategoryCard";
 import SearchBar from "@/src/components/search/SearchBar";
 import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -53,6 +54,7 @@ interface Video {
 
 export default function SearchScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredVideos, setFilteredVideos] = useState<Video[]>(mockVideos);
 
@@ -83,8 +85,7 @@ export default function SearchScreen() {
       video={item}
       variant="vertical"
       onPress={() => {
-        // Handle video press
-        console.log(`Pressed video: ${item.id}`);
+        router.push(`/video/${item.id}`);
       }}
       style={styles.categoryCard}
     />
