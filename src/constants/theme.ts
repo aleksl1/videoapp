@@ -47,6 +47,13 @@ export const fontConfig = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 1,
   },
+  md_light_weight: {
+    fontFamily: "Poppins",
+    fontWeight: "400",
+    fontSize: FONT_SIZES.md,
+    lineHeight: 24,
+    letterSpacing: 1,
+  },
   sm: {
     fontFamily: "Poppins",
     fontWeight: "400",
