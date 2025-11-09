@@ -26,6 +26,10 @@ export const FONT_SIZES = {
   xxl: 22,
 } as const;
 
+export const BORDER_RADIUS = {
+  md: 16,
+} as const;
+
 export const fontConfig = StyleSheet.create({
   xxl: {
     fontFamily: "Poppins",
