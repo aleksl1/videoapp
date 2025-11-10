@@ -22,7 +22,7 @@ export default function SearchBar({
   editable = true,
 }: SearchBarProps) {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} pointerEvents={editable ? "auto" : "none"}>
       <View style={styles.innerContainer}>
         <SearchIcon height={24} width={24} />
         <TextInput
