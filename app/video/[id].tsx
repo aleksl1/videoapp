@@ -24,6 +24,7 @@ import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 import Video, { VideoRef } from "react-native-video";
 
 // Mock video data - in a real app, this would come from an API
+// TODO: Remove this once the API is implemented
 const mockVideoData: Record<
   string,
   { title: string; subtitle: string; videoUri: number }
@@ -66,13 +67,14 @@ const NotesRoute = () => (
 );
 
 export default function VideoDetailScreen() {
-  const { id, title, channelTitle, publishedAt, description } = useLocalSearchParams<{
-    id: string;
-    title?: string;
-    channelTitle?: string;
-    publishedAt?: string;
-    description?: string;
-  }>();
+  const { id, title, channelTitle, publishedAt, description } =
+    useLocalSearchParams<{
+      id: string;
+      title?: string;
+      channelTitle?: string;
+      publishedAt?: string;
+      description?: string;
+    }>();
   const insets = useSafeAreaInsets();
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
@@ -90,15 +92,15 @@ export default function VideoDetailScreen() {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Fetch video details from YouTube API
-  const { data: videoDetailsData, isLoading: isLoadingDetails } = useYouTubeVideoDetails({
-    videoId: id as string,
-    enabled: !!id,
-  });
+  const { data: videoDetailsData, isLoading: isLoadingDetails } =
+    useYouTubeVideoDetails({
+      videoId: id as string,
+      enabled: !!id,
+    });
 
   const videoDetails = videoDetailsData?.items?.[0];
 
-  // const videoId = Array.isArray(id) ? id[0] : id;
-  const videoId = "1";
+  const videoId = Array.isArray(id) ? id[0] : id;
   const videoData = videoId ? mockVideoData[videoId] : null;
 
   // Use params if available, fallback to mock data
