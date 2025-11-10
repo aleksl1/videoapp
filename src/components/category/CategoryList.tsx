@@ -68,7 +68,7 @@ export default function CategoryList({ category }: CategoryListProps) {
     if (!isFetchingNextPage) return null;
     return (
       <View style={styles.footerLoader}>
-        <ActivityIndicator size="small" color={COLORS.primary} />
+        <ActivityIndicator size="small" color={COLORS.primary} testID="activity-indicator" />
       </View>
     );
   };
@@ -94,10 +94,11 @@ export default function CategoryList({ category }: CategoryListProps) {
       </View>
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+          <ActivityIndicator size="large" color={COLORS.primary} testID="activity-indicator" />
         </View>
       ) : (
         <FlatList<VideoCardData>
+          testID="category-flatlist"
           horizontal
           data={videos}
           renderItem={renderCategoryCard}
