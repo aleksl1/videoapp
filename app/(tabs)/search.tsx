@@ -97,6 +97,11 @@ export default function SearchScreen() {
     handleSearchChange(searchQuery);
   };
 
+  const handleClear = () => {
+    setSearchQuery("");
+    setFilteredVideos(mockVideos);
+  };
+
   const renderVideoCard = ({ item }: { item: Video }) => (
     <CategoryCardVertical
       video={item}
@@ -119,6 +124,7 @@ export default function SearchScreen() {
           value={searchQuery}
           onChangeText={handleSearchChange}
           onSubmit={handleSearchSubmit}
+          onClear={handleClear}
           editable={true}
         />
       </View>

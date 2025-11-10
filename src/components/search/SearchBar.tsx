@@ -5,13 +5,15 @@ import {
   fontConfig,
   SPACING,
 } from "@/src/constants/theme";
-import { StyleSheet, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import ClearIcon from "../icons/ClearIcon";
 import SearchIcon from "../icons/SearchIcon";
 
 interface SearchBarProps {
   value: string;
   onChangeText: (text: string) => void;
   onSubmit: () => void;
+  onClear?: () => void;
   editable?: boolean;
 }
 
@@ -19,8 +21,17 @@ export default function SearchBar({
   value,
   onChangeText,
   onSubmit,
+  onClear,
   editable = true,
 }: SearchBarProps) {
+  const handleClear = () => {
+    if (onClear) {
+      onClear();
+    } else {
+      onChangeText("");
+    }
+  };
+
   return (
     <View style={styles.container} pointerEvents={editable ? "auto" : "none"}>
       <View style={styles.innerContainer}>
@@ -35,6 +46,15 @@ export default function SearchBar({
           placeholderTextColor={COLORS.outline}
           editable={editable}
         />
+        {value.length > 0 && editable && (
+          <Pressable
+            onPress={handleClear}
+            hitSlop={8}
+            style={styles.clearButton}
+          >
+            <ClearIcon height={20} width={20} stroke={COLORS.outline} />
+          </Pressable>
+        )}
       </View>
     </View>
   );
@@ -60,5 +80,8 @@ const styles = StyleSheet.create({
     paddingStart: SPACING.sm,
     paddingBottom: SPACING.xs,
     ...fontConfig.md_light_weight,
+  },
+  clearButton: {
+    padding: SPACING.xs,
   },
 });
