@@ -1,8 +1,8 @@
-import React from "react";
-import { render, fireEvent, waitFor } from "@testing-library/react-native";
-import { Linking } from "react-native";
-import LoginScreen from "@/app/login";
+import LoginScreen from "@/app";
+import { fireEvent, render, waitFor } from "@testing-library/react-native";
 import { router } from "expo-router";
+import React from "react";
+import { Linking } from "react-native";
 
 // Mock expo-router
 jest.mock("expo-router", () => ({
