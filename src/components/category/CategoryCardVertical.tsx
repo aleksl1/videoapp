@@ -1,4 +1,9 @@
-import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
+import {
+  BORDER_RADIUS,
+  COLORS,
+  SPACING,
+  fontConfig,
+} from "@/src/constants/theme";
 import React from "react";
 import {
   Image,
@@ -28,14 +33,11 @@ export default function CategoryCardVertical({
 }: CategoryCardVerticalProps) {
   const [imageError, setImageError] = React.useState(false);
 
-  const formattedDate = new Date(video.publishedAt).toLocaleDateString(
-    "en-US",
-    {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }
-  );
+  const date = new Date(video.publishedAt);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  const formattedDate = `${day}.${month}.${year}`;
 
   return (
     <Pressable style={[styles.container, style]} onPress={onPress}>
@@ -53,12 +55,13 @@ export default function CategoryCardVertical({
         )}
       </View>
       <View style={styles.textContainer}>
+        <Text style={styles.channelTitle} numberOfLines={1}>
+          {video.channelTitle}
+        </Text>
         <Text style={styles.title} numberOfLines={2}>
           {video.title}
         </Text>
-        <Text style={styles.subtitle} numberOfLines={1}>
-          {video.channelTitle}
-        </Text>
+
         <Text style={styles.date}>{formattedDate}</Text>
       </View>
     </Pressable>
@@ -75,7 +78,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: "100%",
     height: 200,
-    borderRadius: 8,
+    borderRadius: BORDER_RADIUS.md,
     overflow: "hidden",
     backgroundColor: COLORS.background,
     marginBottom: SPACING.sm,
@@ -83,7 +86,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: 200,
-    borderRadius: 8,
+    borderRadius: BORDER_RADIUS.md,
   },
   placeholderContainer: {
     width: "100%",
@@ -99,17 +102,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.sm,
   },
   title: {
-    ...fontConfig.md,
-    marginBottom: 4,
+    ...fontConfig.sm_medium_compact,
+    paddingTop: SPACING.sm,
   },
-  subtitle: {
-    ...fontConfig.sm,
-    color: COLORS.outline,
-    marginBottom: 2,
+  channelTitle: {
+    ...fontConfig.xs_semi_bold,
+    color: COLORS.primary,
   },
   date: {
     ...fontConfig.sm,
-    color: COLORS.outline,
+    color: COLORS.primary,
     textAlign: "right",
+    marginTop: SPACING.sm,
   },
 });
