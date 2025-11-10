@@ -1,4 +1,9 @@
-import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
+import {
+  BORDER_RADIUS,
+  COLORS,
+  SPACING,
+  fontConfig,
+} from "@/src/constants/theme";
 import React, { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -30,29 +35,29 @@ export default function Chip({
 
 const styles = StyleSheet.create({
   chip: {
-    flex: 1,
-    borderRadius: 12,
+    borderRadius: BORDER_RADIUS.sm,
     padding: SPACING.sm,
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.sm,
+    gap: SPACING.md,
+    paddingRight: SPACING.md,
   },
   iconContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
   textContainer: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: SPACING.xs,
   },
   label: {
-    ...fontConfig.sm,
+    ...fontConfig.xxs_semi_bold,
+    lineHeight: 12,
   },
   value: {
-    ...fontConfig.sm,
-    fontWeight: "600",
+    ...fontConfig.xxs_semi_bold,
+    lineHeight: 12,
   },
 });

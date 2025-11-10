@@ -1,6 +1,6 @@
-import { Stack } from "expo-router";
 import { QueryProvider } from "@/src/providers/QueryProvider";
 import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 
@@ -38,6 +38,20 @@ export default function RootLayout() {
     return null;
   }
 
+  const testVideo = true;
+  if (testVideo) {
+    return (
+      <QueryProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="video/[id]" options={{ headerShown: false }} />
+        </Stack>
+      </QueryProvider>
+    );
+  }
   return (
     <QueryProvider>
       <Stack
