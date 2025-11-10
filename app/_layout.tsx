@@ -38,20 +38,6 @@ export default function RootLayout() {
     return null;
   }
 
-  const testVideo = true;
-  if (testVideo) {
-    return (
-      <QueryProvider>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="video/[id]" options={{ headerShown: false }} />
-        </Stack>
-      </QueryProvider>
-    );
-  }
   return (
     <QueryProvider>
       <Stack

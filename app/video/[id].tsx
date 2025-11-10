@@ -5,10 +5,13 @@ import PersonIcon from "@/src/components/icons/PersonIcon";
 import ViewsIcon from "@/src/components/icons/ViewsIcon";
 import VideoControls from "@/src/components/video/VideoControls";
 import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
+import { useYouTubeVideoDetails } from "@/src/hooks";
+import { formatNumber } from "@/src/utils/formatters";
 import { useLocalSearchParams } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useRef, useState } from "react";
 import {
+  ActivityIndicator,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -52,49 +55,6 @@ const mockVideoData: Record<
   },
 };
 
-// Details Tab Component
-const DetailsRoute = () => (
-  <ScrollView style={styles.tabContent}>
-    <Text style={styles.sectionTitle}>Description</Text>
-    <Text style={styles.description}>
-      This is a detailed description of the video. In a real application, this
-      would contain information about the video content, the instructor,
-      learning objectives, and other relevant details.
-    </Text>
-    <Text style={styles.sectionTitle}>Statistics</Text>
-    <View style={styles.statisticsContainer}>
-      <Chip
-        icon={
-          <ViewsIcon
-            width={20}
-            height={20}
-            stroke={COLORS.white}
-            strokeWidth={3}
-          />
-        }
-        label="Views"
-        value="13123131231"
-        backgroundColor={COLORS.primary}
-        textColor={COLORS.white}
-      />
-      <Chip
-        icon={
-          <LikesIcon
-            width={20}
-            height={20}
-            stroke={COLORS.white}
-            strokeWidth={3}
-          />
-        }
-        label="Likes"
-        value="32156"
-        backgroundColor={COLORS.primary}
-        textColor={COLORS.white}
-      />
-    </View>
-  </ScrollView>
-);
-
 // Notes Tab Component
 const NotesRoute = () => (
   <ScrollView style={styles.tabContent}>
@@ -104,11 +64,6 @@ const NotesRoute = () => (
     </Text>
   </ScrollView>
 );
-
-const renderScene = SceneMap({
-  details: DetailsRoute,
-  notes: NotesRoute,
-});
 
 export default function VideoDetailScreen() {
   const { id, title, channelTitle, publishedAt, description } = useLocalSearchParams<{
@@ -134,6 +89,14 @@ export default function VideoDetailScreen() {
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  // Fetch video details from YouTube API
+  const { data: videoDetailsData, isLoading: isLoadingDetails } = useYouTubeVideoDetails({
+    videoId: id as string,
+    enabled: !!id,
+  });
+
+  const videoDetails = videoDetailsData?.items?.[0];
+
   // const videoId = Array.isArray(id) ? id[0] : id;
   const videoId = "1";
   const videoData = videoId ? mockVideoData[videoId] : null;
@@ -142,7 +105,61 @@ export default function VideoDetailScreen() {
   const displayTitle = title || videoData?.title;
   const displayChannelTitle = channelTitle || videoData?.subtitle;
   const displayPublishedAt = publishedAt;
-  const displayDescription = description;
+  const displayDescription = description || videoDetails?.snippet?.description;
+  const displayViewCount = videoDetails?.statistics?.viewCount;
+  const displayLikeCount = videoDetails?.statistics?.likeCount;
+
+  // Details Tab Component
+  const DetailsRoute = () => (
+    <ScrollView style={styles.tabContent}>
+      <Text style={styles.sectionTitle}>Description</Text>
+      {displayDescription ? (
+        <Text style={styles.description}>{displayDescription}</Text>
+      ) : (
+        <Text style={styles.placeholder}>No description available.</Text>
+      )}
+      <Text style={styles.sectionTitle}>Statistics</Text>
+      {isLoadingDetails ? (
+        <ActivityIndicator size="small" color={COLORS.primary} />
+      ) : (
+        <View style={styles.statisticsContainer}>
+          <Chip
+            icon={
+              <ViewsIcon
+                width={20}
+                height={20}
+                stroke={COLORS.white}
+                strokeWidth={3}
+              />
+            }
+            label="Views"
+            value={displayViewCount ? formatNumber(displayViewCount) : "N/A"}
+            backgroundColor={COLORS.primary}
+            textColor={COLORS.white}
+          />
+          <Chip
+            icon={
+              <LikesIcon
+                width={20}
+                height={20}
+                stroke={COLORS.white}
+                strokeWidth={3}
+              />
+            }
+            label="Likes"
+            value={displayLikeCount ? formatNumber(displayLikeCount) : "N/A"}
+            backgroundColor={COLORS.primary}
+            textColor={COLORS.white}
+          />
+        </View>
+      )}
+    </ScrollView>
+  );
+
+  const renderScene = SceneMap({
+    details: DetailsRoute,
+    notes: NotesRoute,
+  });
 
   const renderTabBar = (props: any) => (
     <TabBar

@@ -1,6 +1,7 @@
 import type {
   YouTubeSearchParams,
   YouTubeSearchResponse,
+  YouTubeVideoDetailsResponse,
 } from "@/src/types/youtube";
 import { youtubeApiGet } from "./api";
 
@@ -20,13 +21,15 @@ export async function searchVideos(
   return youtubeApiGet<YouTubeSearchResponse>("/search", searchParams);
 }
 
-export async function getVideoDetails(videoId: string) {
+export async function getVideoDetails(
+  videoId: string
+): Promise<YouTubeVideoDetailsResponse> {
   const params = {
     part: "snippet,contentDetails,statistics",
     id: videoId,
   };
 
-  return youtubeApiGet("/videos", params);
+  return youtubeApiGet<YouTubeVideoDetailsResponse>("/videos", params);
 }
 
 export async function getVideosByCategory(

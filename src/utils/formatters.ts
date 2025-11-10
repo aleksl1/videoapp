@@ -34,3 +34,20 @@ export function formatDate(timestamp: number): string {
   if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} months ago`;
   return `${Math.floor(diffInDays / 365)} years ago`;
 }
+
+export function formatNumber(num: number | string): string {
+  const count = typeof num === 'string' ? parseInt(num, 10) : num;
+  
+  if (isNaN(count)) return '0';
+  
+  if (count >= 1000000000) {
+    return `${(count / 1000000000).toFixed(1)}B`;
+  }
+  if (count >= 1000000) {
+    return `${(count / 1000000).toFixed(1)}M`;
+  }
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(1)}K`;
+  }
+  return count.toString();
+}
