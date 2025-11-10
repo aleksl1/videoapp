@@ -1,4 +1,4 @@
-import CategoryCard from "@/src/components/category/CategoryCard";
+import CategoryCardVertical from "@/src/components/category/CategoryCardVertical";
 import SearchBar from "@/src/components/search/SearchBar";
 import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
 import { useRouter } from "expo-router";
@@ -81,9 +81,8 @@ export default function SearchScreen() {
   };
 
   const renderVideoCard = ({ item }: { item: Video }) => (
-    <CategoryCard
+    <CategoryCardVertical
       video={item}
-      variant="vertical"
       onPress={() => {
         router.push(`/video/${item.id}`);
       }}

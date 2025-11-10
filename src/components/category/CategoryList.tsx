@@ -1,4 +1,4 @@
-import { COLORS } from "@/src/constants/theme";
+import { COLORS, fontConfig, SPACING } from "@/src/constants/theme";
 import { useYouTubeSearch } from "@/src/hooks/useYouTubeSearch";
 import { transformYouTubeVideos, VideoCardData } from "@/src/utils/youtube";
 import { router } from "expo-router";
@@ -10,7 +10,7 @@ import {
   Text,
   View,
 } from "react-native";
-import CategoryCard from "./CategoryCard";
+import CategoryCardHorizontal from "./CategoryCardHorizontal";
 import ShowMoreButton from "./ShowMoreButton";
 
 interface CategoryListProps {
@@ -35,12 +35,13 @@ export default function CategoryList({ category }: CategoryListProps) {
     if (!data?.pages) return [];
 
     // Flatten all pages into a single array
-    const allVideos = data.pages.flatMap((page) => transformYouTubeVideos(page.items));
+    const allVideos = data.pages.flatMap((page) =>
+      transformYouTubeVideos(page.items)
+    );
 
     // Deduplicate videos by ID
     const uniqueVideos = allVideos.filter(
-      (video, index, self) =>
-        index === self.findIndex((v) => v.id === video.id)
+      (video, index, self) => index === self.findIndex((v) => v.id === video.id)
     );
 
     return uniqueVideos;
@@ -61,14 +62,21 @@ export default function CategoryList({ category }: CategoryListProps) {
   };
 
   const renderCategoryCard = ({ item }: { item: VideoCardData }) => (
-    <CategoryCard video={item} onPress={() => handleVideoPress(item.id)} />
+    <CategoryCardHorizontal
+      video={item}
+      onPress={() => handleVideoPress(item.id)}
+    />
   );
 
   const renderFooter = () => {
     if (!isFetchingNextPage) return null;
     return (
       <View style={styles.footerLoader}>
-        <ActivityIndicator size="small" color={COLORS.primary} testID="activity-indicator" />
+        <ActivityIndicator
+          size="small"
+          color={COLORS.primary}
+          testID="activity-indicator"
+        />
       </View>
     );
   };
@@ -90,11 +98,15 @@ export default function CategoryList({ category }: CategoryListProps) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>{category}</Text>
-        <ShowMoreButton category={category} onPress={handleShowMore} />
+        <ShowMoreButton onPress={handleShowMore} />
       </View>
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary} testID="activity-indicator" />
+          <ActivityIndicator
+            size="large"
+            color={COLORS.primary}
+            testID="activity-indicator"
+          />
         </View>
       ) : (
         <FlatList<VideoCardData>
@@ -104,11 +116,11 @@ export default function CategoryList({ category }: CategoryListProps) {
           renderItem={renderCategoryCard}
           keyExtractor={(item, index) => `${item.id}-${index}`}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.listContainer}
           nestedScrollEnabled={true}
           onEndReached={handleEndReached}
           onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
+          contentContainerStyle={styles.listContainer}
         />
       )}
     </View>
@@ -117,20 +129,20 @@ export default function CategoryList({ category }: CategoryListProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 16,
+    paddingStart: SPACING.xl,
+    borderBottomColor: COLORS.primary,
+    borderBottomWidth: 2,
+    marginBottom: SPACING.sm,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginRight: SPACING.xl,
+    marginBottom: SPACING.md,
   },
   headerText: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  listContainer: {
-    paddingRight: 16,
+    ...fontConfig.lg,
   },
   loadingContainer: {
     height: 200,
@@ -153,5 +165,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     justifyContent: "center",
     alignItems: "center",
+  },
+  listContainer: {
+    gap: SPACING.lg,
   },
 });

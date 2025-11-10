@@ -1,18 +1,15 @@
 import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
 import React from "react";
 import {
-  Dimensions,
   Image,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
 
-const { width: screenWidth } = Dimensions.get("window");
-
-interface CategoryCardProps {
+interface CategoryCardVerticalProps {
   video: {
     id: string;
     title: string;
@@ -21,16 +18,14 @@ interface CategoryCardProps {
     publishedAt: string;
   };
   onPress: () => void;
-  variant?: "horizontal" | "vertical"; // horizontal for home carousel, vertical for search list
   style?: ViewStyle;
 }
 
-export default function CategoryCard({
+export default function CategoryCardVertical({
   video,
   onPress,
-  variant = "horizontal",
   style,
-}: CategoryCardProps) {
+}: CategoryCardVerticalProps) {
   const [imageError, setImageError] = React.useState(false);
 
   const formattedDate = new Date(video.publishedAt).toLocaleDateString(
@@ -42,23 +37,9 @@ export default function CategoryCard({
     }
   );
 
-  const isVertical = variant === "vertical";
-
   return (
-    <TouchableOpacity
-      style={[
-        styles.container,
-        isVertical ? styles.containerVertical : styles.containerHorizontal,
-        style,
-      ]}
-      onPress={onPress}
-    >
-      <View
-        style={[
-          styles.imageContainer,
-          isVertical ? styles.imageVertical : styles.imageHorizontal,
-        ]}
-      >
+    <Pressable style={[styles.container, style]} onPress={onPress}>
+      <View style={styles.imageContainer}>
         {imageError ? (
           <View style={styles.placeholderContainer}>
             <Text style={styles.placeholderText}>📹</Text>
@@ -66,20 +47,12 @@ export default function CategoryCard({
         ) : (
           <Image
             source={{ uri: video.thumbnailUrl }}
-            style={[
-              styles.image,
-              isVertical ? styles.imageVertical : styles.imageHorizontal,
-            ]}
+            style={styles.image}
             onError={() => setImageError(true)}
           />
         )}
       </View>
-      <View
-        style={[
-          styles.textContainer,
-          isVertical && styles.textContainerVertical,
-        ]}
-      >
+      <View style={styles.textContainer}>
         <Text style={styles.title} numberOfLines={2}>
           {video.title}
         </Text>
@@ -88,39 +61,29 @@ export default function CategoryCard({
         </Text>
         <Text style={styles.date}>{formattedDate}</Text>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.white,
-  },
-  containerHorizontal: {
-    width: screenWidth / 2 + 20,
-    marginRight: SPACING.md,
-  },
-  containerVertical: {
     width: "100%",
     flexDirection: "column",
     marginBottom: SPACING.lg,
+    backgroundColor: COLORS.white,
   },
   imageContainer: {
+    width: "100%",
+    height: 200,
     borderRadius: 8,
     overflow: "hidden",
     backgroundColor: COLORS.background,
+    marginBottom: SPACING.sm,
   },
   image: {
+    width: "100%",
+    height: 200,
     borderRadius: 8,
-  },
-  imageHorizontal: {
-    width: "100%",
-    height: 200,
-  },
-  imageVertical: {
-    width: "100%",
-    height: 200,
-    marginBottom: SPACING.sm,
   },
   placeholderContainer: {
     width: "100%",
@@ -133,10 +96,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
   },
   textContainer: {
-    padding: SPACING.sm,
-  },
-  textContainerVertical: {
-    padding: 0,
     paddingHorizontal: SPACING.sm,
   },
   title: {

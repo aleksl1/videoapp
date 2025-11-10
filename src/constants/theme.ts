@@ -20,6 +20,7 @@ export const SPACING = {
 } as const;
 
 export const FONT_SIZES = {
+  xxs: 10,
   xs: 12,
   sm: 13,
   md: 16,
@@ -37,6 +38,13 @@ export const fontConfig = StyleSheet.create({
     fontFamily: "Poppins",
     fontWeight: "600",
     fontSize: FONT_SIZES.xxl,
+    lineHeight: 24,
+    letterSpacing: 1,
+  },
+  lg: {
+    fontFamily: "Poppins",
+    fontWeight: "600",
+    fontSize: FONT_SIZES.lg,
     lineHeight: 24,
     letterSpacing: 1,
   },
@@ -67,5 +75,20 @@ export const fontConfig = StyleSheet.create({
     fontSize: FONT_SIZES.xs,
     lineHeight: 24,
     letterSpacing: 1,
+  },
+  xs_compact: {
+    fontFamily: "Poppins",
+    fontWeight: "500",
+    fontSize: FONT_SIZES.xs,
+    lineHeight: 12,
+    letterSpacing: 1,
+  },
+  xxs: {
+    fontFamily: "Poppins",
+    fontWeight: "400",
+    fontSize: FONT_SIZES.xxs,
+    lineHeight: 24,
+    letterSpacing: 1,
+    textAlign: "center",
   },
 });

@@ -1,8 +1,9 @@
-import React from "react";
-import { render, screen, waitFor } from "@testing-library/react-native";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import CategoryList from "@/src/components/category/CategoryList";
 import * as useYouTubeSearchHook from "@/src/hooks/useYouTubeSearch";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render, screen, waitFor } from "@testing-library/react-native";
+import React from "react";
+import { PressableProps } from "react-native";
 
 // Mock expo-router
 jest.mock("expo-router", () => ({
@@ -11,13 +12,16 @@ jest.mock("expo-router", () => ({
   },
 }));
 
-// Mock CategoryCard component
-jest.mock("@/src/components/category/CategoryCard", () => {
+// Mock CategoryCardHorizontal component
+jest.mock("@/src/components/category/CategoryCardHorizontal", () => {
   const { View, Text, TouchableOpacity } = require("react-native");
-  return function CategoryCard({ video, onPress }: any) {
+  return function CategoryCardHorizontal({ video, onPress }: any) {
     return (
       <TouchableOpacity testID={`video-card-${video.id}`} onPress={onPress}>
-        <Text>{video.title}</Text>
+        <View>
+          <Text>{video.title}</Text>
+          <Text>{video.publishedAt}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -25,12 +29,12 @@ jest.mock("@/src/components/category/CategoryCard", () => {
 
 // Mock ShowMoreButton component
 jest.mock("@/src/components/category/ShowMoreButton", () => {
-  const { TouchableOpacity, Text } = require("react-native");
-  return function ShowMoreButton({ category, onPress }: any) {
+  const { Pressable, Text } = require("react-native");
+  return function ShowMoreButton(props: PressableProps) {
     return (
-      <TouchableOpacity testID="show-more-button" onPress={onPress}>
-        <Text>Show More {category}</Text>
-      </TouchableOpacity>
+      <Pressable {...props} testID="show-more-button">
+        <Text>Show More</Text>
+      </Pressable>
     );
   };
 });
@@ -51,7 +55,6 @@ const mockVideoData = [
     id: { videoId: "video1" },
     snippet: {
       title: "React Native Tutorial",
-      channelTitle: "Tech Channel",
       publishedAt: "2024-01-01T00:00:00Z",
       thumbnails: {
         medium: {
@@ -72,6 +75,7 @@ const mockVideoData = [
       },
       description: "Learn React Native",
       channelId: "channel1",
+      channelTitle: "Tech Channel",
       liveBroadcastContent: "none",
       publishTime: "2024-01-01T00:00:00Z",
     },
@@ -80,7 +84,6 @@ const mockVideoData = [
     id: { videoId: "video2" },
     snippet: {
       title: "Advanced React Native",
-      channelTitle: "Pro Channel",
       publishedAt: "2024-01-02T00:00:00Z",
       thumbnails: {
         medium: {
@@ -101,6 +104,7 @@ const mockVideoData = [
       },
       description: "Advanced concepts",
       channelId: "channel2",
+      channelTitle: "Pro Channel",
       liveBroadcastContent: "none",
       publishTime: "2024-01-02T00:00:00Z",
     },
