@@ -15,10 +15,63 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export type SortOrder = "relevance" | "date" | "date-asc";
+/**
+ * UI-level sort order options for the sort modal.
+ *
+ * Note: This type includes 'date-asc' which is NOT a valid YouTube API parameter.
+ * The YouTube API only supports descending date order ('date'). To implement ascending
+ * date order, the API is called with 'date' and results are reversed on the frontend.
+ *
+ * Use `mapSortOrderToYouTubeAPI` utility to convert UI sort orders to valid API parameters.
+ * Use `shouldReverseResults` to determine if results need frontend reversal.
+ */
+export type UISortOrder = "relevance" | "date" | "date-asc";
+
+/**
+ * Maps UI sort order to valid YouTube API order parameter.
+ *
+ * @param uiOrder - The UI-level sort order
+ * @returns Valid YouTube API order parameter
+ */
+export function mapSortOrderToYouTubeAPI(
+  uiOrder: UISortOrder
+): "relevance" | "date" {
+  // YouTube API doesn't support ascending date order, so we map 'date-asc' to 'date'
+  // and handle the reversal on the frontend
+  return uiOrder === "date-asc" ? "date" : uiOrder;
+}
+
+/**
+ * Determines if search results should be reversed on the frontend.
+ *
+ * @param uiOrder - The UI-level sort order
+ * @returns true if results should be reversed, false otherwise
+ */
+export function shouldReverseResults(uiOrder: UISortOrder): boolean {
+  return uiOrder === "date-asc";
+}
+
+/**
+ * Gets the display label for a sort order.
+ *
+ * @param order - The UI-level sort order
+ * @returns Display label for the sort order
+ */
+export function getSortLabel(order: UISortOrder): string {
+  switch (order) {
+    case "relevance":
+      return "Most popular";
+    case "date":
+      return "Upload date: Latest";
+    case "date-asc":
+      return "Upload date: Oldest";
+    default:
+      return "Most popular";
+  }
+}
 
 interface SortOption {
-  value: SortOrder;
+  value: UISortOrder;
   label: string;
 }
 
@@ -31,8 +84,8 @@ const SORT_OPTIONS: SortOption[] = [
 interface SortModalProps {
   visible: boolean;
   onClose: () => void;
-  currentOrder: SortOrder;
-  onConfirm: (order: SortOrder) => void;
+  currentOrder: UISortOrder;
+  onConfirm: (order: UISortOrder) => void;
 }
 
 export default function SortModal({
@@ -41,7 +94,7 @@ export default function SortModal({
   currentOrder,
   onConfirm,
 }: SortModalProps) {
-  const [selectedOrder, setSelectedOrder] = useState<SortOrder>(currentOrder);
+  const [selectedOrder, setSelectedOrder] = useState<UISortOrder>(currentOrder);
   const insets = useSafeAreaInsets();
 
   const handleConfirm = () => {

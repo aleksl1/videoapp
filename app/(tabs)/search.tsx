@@ -1,5 +1,10 @@
 import CategoryCardVertical from "@/src/components/category/CategoryCardVertical";
-import SortModal, { SortOrder } from "@/src/components/common/SortModal";
+import SortModal, {
+  getSortLabel,
+  mapSortOrderToYouTubeAPI,
+  shouldReverseResults,
+  UISortOrder,
+} from "@/src/components/common/SortModal";
 import SearchBar from "@/src/components/search/SearchBar";
 import { COLORS, fontConfig, SPACING } from "@/src/constants/theme";
 import { useYouTubeSearch } from "@/src/hooks/useYouTubeSearch";
@@ -26,13 +31,11 @@ export default function SearchScreen() {
   const [submittedQuery, setSubmittedQuery] = useState(
     (params.category as string) || ""
   );
-  const [sortOrder, setSortOrder] = useState<SortOrder>("relevance");
+  const [sortOrder, setSortOrder] = useState<UISortOrder>("relevance");
   const [isSortModalVisible, setIsSortModalVisible] = useState(false);
 
-  // Use YouTube search hook with submitted query
-  // Note: YouTube API doesn't support ascending date order, so we use "date" for both
-  // and reverse the results on the frontend for "date-asc"
-  const apiOrder = sortOrder === "date-asc" ? "date" : sortOrder;
+  // Map UI sort order to valid YouTube API parameter
+  const apiOrder = mapSortOrderToYouTubeAPI(sortOrder);
 
   const {
     data,
@@ -66,8 +69,8 @@ export default function SearchScreen() {
       (video, index, self) => index === self.findIndex((v) => v.id === video.id)
     );
 
-    // If sorting by oldest, reverse the array (YouTube API only supports newest first)
-    if (sortOrder === "date-asc") {
+    // Reverse results if needed (e.g., for ascending date order)
+    if (shouldReverseResults(sortOrder)) {
       return [...uniqueVideos].reverse();
     }
 
@@ -105,21 +108,8 @@ export default function SearchScreen() {
     setIsSortModalVisible(true);
   }, []);
 
-  const handleSortConfirm = useCallback((order: SortOrder) => {
+  const handleSortConfirm = useCallback((order: UISortOrder) => {
     setSortOrder(order);
-  }, []);
-
-  const getSortLabel = useCallback((order: SortOrder) => {
-    switch (order) {
-      case "relevance":
-        return "Most popular";
-      case "date":
-        return "Upload date: Latest";
-      case "date-asc":
-        return "Upload date: Oldest";
-      default:
-        return "Most popular";
-    }
   }, []);
 
   const handleEndReached = useCallback(() => {
