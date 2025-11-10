@@ -34,7 +34,7 @@ export async function youtubeApiGet<T>(
   // Merge API key with other params
   const requestParams = {
     ...params,
-    key: YOUTUBE_API_KEY,
+    // key: YOUTUBE_API_KEY,
   };
 
   const response = await axiosInstance.get<T>(endpoint, {

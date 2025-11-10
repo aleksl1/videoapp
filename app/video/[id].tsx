@@ -1,13 +1,15 @@
 import ChannelInfo from "@/src/components/common/ChannelInfo";
 import Chip from "@/src/components/common/Chip";
-import ChannelNameIcon from "@/src/components/icons/ChannelNameIcon";
 import LikesIcon from "@/src/components/icons/LikesIcon";
+import PersonIcon from "@/src/components/icons/PersonIcon";
 import ViewsIcon from "@/src/components/icons/ViewsIcon";
+import VideoControls from "@/src/components/video/VideoControls";
 import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -15,7 +17,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
-import Video from "react-native-video";
+import Video, { VideoRef } from "react-native-video";
 
 // Mock video data - in a real app, this would come from an API
 const mockVideoData: Record<
@@ -117,6 +119,14 @@ export default function VideoDetailScreen() {
     { key: "notes", title: "Notes" },
   ]);
 
+  // Video player state
+  const videoRef = useRef<VideoRef>(null);
+  const [paused, setPaused] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   // const videoId = Array.isArray(id) ? id[0] : id;
   const videoId = "1";
   const videoData = videoId ? mockVideoData[videoId] : null;
@@ -133,6 +143,52 @@ export default function VideoDetailScreen() {
     />
   );
 
+  // Video control handlers
+  const handlePlayPause = () => {
+    setPaused(!paused);
+  };
+
+  const handleMute = () => {
+    setMuted(!muted);
+  };
+
+  const handleSeek = (time: number) => {
+    videoRef.current?.seek(time);
+  };
+
+  const handleSeekStart = () => {
+    // Optional: pause video while seeking
+  };
+
+  const handleSeekEnd = (time: number) => {
+    videoRef.current?.seek(time);
+    setCurrentTime(time);
+  };
+
+  const handleBackward = () => {
+    const newTime = Math.max(currentTime - 10, 0);
+    videoRef.current?.seek(newTime);
+  };
+
+  const handleForward = () => {
+    const newTime = Math.min(currentTime + 10, duration);
+    videoRef.current?.seek(newTime);
+  };
+
+  const handleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+    // Note: Actual fullscreen implementation would require additional native modules
+    // or platform-specific code
+  };
+
+  const handleProgress = (data: { currentTime: number }) => {
+    setCurrentTime(data.currentTime);
+  };
+
+  const handleLoad = (data: { duration: number }) => {
+    setDuration(data.duration);
+  };
+
   if (!videoData) {
     return (
       <View style={styles.container}>
@@ -142,14 +198,35 @@ export default function VideoDetailScreen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container]}>
       <View style={styles.headerSection}>
         <View style={styles.videoContainer}>
+          <StatusBar hidden={true} />
           <Video
-            source={{ uri: videoData.videoUri }}
+            ref={videoRef}
+            source={videoData.videoUri}
             style={styles.video}
-            controls
+            controls={false}
+            paused={paused}
+            muted={muted}
             resizeMode="contain"
+            onProgress={handleProgress}
+            onLoad={handleLoad}
+            progressUpdateInterval={250}
+          />
+          <VideoControls
+            paused={paused}
+            muted={muted}
+            currentTime={currentTime}
+            duration={duration}
+            onPlayPause={handlePlayPause}
+            onMute={handleMute}
+            onSeek={handleSeek}
+            onSeekStart={handleSeekStart}
+            onSeekEnd={handleSeekEnd}
+            onBackward={handleBackward}
+            onForward={handleForward}
+            onFullscreen={handleFullscreen}
           />
         </View>
 
@@ -158,9 +235,7 @@ export default function VideoDetailScreen() {
             {videoData.title}
           </Text>
           <ChannelInfo
-            icon={
-              <ChannelNameIcon width={20} height={20} fill={COLORS.white} />
-            }
+            icon={<PersonIcon width={20} height={20} fill={COLORS.white} />}
             channelName={videoData.subtitle}
             style={styles.channelInfo}
           />
@@ -256,6 +331,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: SPACING.md,
+    marginTop: SPACING.xs,
   },
   channelInfo: {
     margin: SPACING.md,

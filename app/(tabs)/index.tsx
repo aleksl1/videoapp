@@ -26,7 +26,7 @@ export default function HomeScreen() {
         <View style={styles.searchRow}>
           <Pressable
             style={styles.searchPressable}
-            onPress={() => router.push("/search")}
+            onPress={() => router.push("/video/1234567890")}
           >
             <SearchBar
               value=""

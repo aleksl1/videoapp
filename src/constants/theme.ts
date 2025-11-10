@@ -7,6 +7,7 @@ export const COLORS = {
   white: "#FFFFFF",
   outline: "#C8C8C8",
   black: "#000000",
+  error: "#C71F1F",
 } as const;
 
 export const SPACING = {
