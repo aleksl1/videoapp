@@ -107,7 +107,7 @@ export default function SearchScreen() {
       <View style={styles.resultsHeader}>
         <Text style={styles.resultsText}>
           {searchQuery
-            ? `${filteredVideos.length} results found for "${searchQuery}"`
+            ? `${filteredVideos.length} results found for ${searchQuery}`
             : "Enter a search term to find videos"}
         </Text>
         <Text style={styles.sortText}>Sort by: Most popular</Text>
@@ -117,7 +117,7 @@ export default function SearchScreen() {
 
   const emptyComponent = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>No results found for "{searchQuery}"</Text>
+      <Text style={styles.emptyText}>No results found for {searchQuery}</Text>
     </View>
   );
 
