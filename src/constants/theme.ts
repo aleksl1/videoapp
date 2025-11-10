@@ -15,6 +15,8 @@ export const SPACING = {
   md: 16,
   lg: 24,
   xl: 32,
+  xxl: 64,
+  xxxl: 96,
 } as const;
 
 export const FONT_SIZES = {
@@ -41,6 +43,13 @@ export const fontConfig = StyleSheet.create({
   md: {
     fontFamily: "Poppins",
     fontWeight: "600",
+    fontSize: FONT_SIZES.md,
+    lineHeight: 24,
+    letterSpacing: 1,
+  },
+  md_light_weight: {
+    fontFamily: "Poppins",
+    fontWeight: "400",
     fontSize: FONT_SIZES.md,
     lineHeight: 24,
     letterSpacing: 1,

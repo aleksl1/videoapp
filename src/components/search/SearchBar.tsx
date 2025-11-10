@@ -12,14 +12,14 @@ interface SearchBarProps {
   value: string;
   onChangeText: (text: string) => void;
   onSubmit: () => void;
-  RightIcon?: React.ReactNode;
+  editable?: boolean;
 }
 
 export default function SearchBar({
   value,
   onChangeText,
   onSubmit,
-  RightIcon,
+  editable = true,
 }: SearchBarProps) {
   return (
     <View style={styles.container}>
@@ -33,9 +33,9 @@ export default function SearchBar({
           placeholder={text.search_bar_placeholder}
           returnKeyType="search"
           placeholderTextColor={COLORS.outline}
+          editable={editable}
         />
       </View>
-      {RightIcon}
     </View>
   );
 }
@@ -43,9 +43,6 @@ export default function SearchBar({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: SPACING.md,
   },
   innerContainer: {
     flex: 1,
