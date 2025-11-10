@@ -10,8 +10,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AirplayIcon from "../icons/videoControls/AirplayIcon";
 import BackwardIcon from "../icons/videoControls/BackwardIcon";
+import ExitFullscreenIcon from "../icons/videoControls/ExitFullscreenIcon";
 import ForwardIcon from "../icons/videoControls/ForwardIcon";
 import FullscreenIcon from "../icons/videoControls/FullscreenIcon";
 import LeftArrowIcon from "../icons/videoControls/LeftArrowIcon";
@@ -24,6 +26,7 @@ interface VideoControlsProps {
   muted: boolean;
   currentTime: number;
   duration: number;
+  isFullscreen?: boolean;
   onPlayPause: () => void;
   onMute: () => void;
   onSeek: (time: number) => void;
@@ -40,6 +43,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   muted,
   currentTime,
   duration,
+  isFullscreen = false,
   onPlayPause,
   onMute,
   onSeek,
@@ -51,6 +55,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   onAirplay,
 }) => {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [showControls, setShowControls] = useState(true);
   const [opacity] = useState(new Animated.Value(1));
   const [seekTime, setSeekTime] = useState(currentTime);
@@ -135,7 +140,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           <View style={styles.topControls}>
             <TouchableOpacity
               style={styles.iconButton}
-              onPress={() => router.back()}
+              onPress={() => (isFullscreen ? onFullscreen() : router.back())}
             >
               <LeftArrowIcon width={24} height={24} stroke={COLORS.white} />
             </TouchableOpacity>
@@ -193,13 +198,30 @@ const VideoControls: React.FC<VideoControlsProps> = ({
                 style={styles.fullscreenButton}
                 onPress={onFullscreen}
               >
-                <FullscreenIcon width={24} height={24} stroke={COLORS.white} />
+                {isFullscreen ? (
+                  <ExitFullscreenIcon
+                    width={24}
+                    height={24}
+                    stroke={COLORS.white}
+                  />
+                ) : (
+                  <FullscreenIcon
+                    width={24}
+                    height={24}
+                    stroke={COLORS.white}
+                  />
+                )}
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Progress Bar - Full Width at Bottom */}
-          <View style={styles.progressBarContainer}>
+          <View
+            style={[
+              styles.progressBarContainer,
+              isFullscreen && { bottom: insets.bottom },
+            ]}
+          >
             <View style={styles.progressBarTrack}>
               {/* Background track */}
               <View style={styles.progressBarBackground} />

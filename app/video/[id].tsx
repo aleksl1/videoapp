@@ -6,9 +6,11 @@ import ViewsIcon from "@/src/components/icons/ViewsIcon";
 import VideoControls from "@/src/components/video/VideoControls";
 import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
 import { useLocalSearchParams } from "expo-router";
+import * as ScreenOrientation from "expo-screen-orientation";
 import { useRef, useState } from "react";
 import {
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -21,7 +23,7 @@ import Video, { VideoRef } from "react-native-video";
 // Mock video data - in a real app, this would come from an API
 const mockVideoData: Record<
   string,
-  { title: string; subtitle: string; videoUri: string }
+  { title: string; subtitle: string; videoUri: number }
 > = {
   "1": {
     title: "React Native Tutorial for Beginners",
@@ -174,10 +176,25 @@ export default function VideoDetailScreen() {
     videoRef.current?.seek(newTime);
   };
 
-  const handleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
-    // Note: Actual fullscreen implementation would require additional native modules
-    // or platform-specific code
+  const handleFullscreen = async () => {
+    const newFullscreenState = !isFullscreen;
+    setIsFullscreen(newFullscreenState);
+
+    try {
+      if (newFullscreenState) {
+        // Enter fullscreen - rotate to landscape
+        await ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.LANDSCAPE
+        );
+      } else {
+        // Exit fullscreen - rotate back to portrait
+        await ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.PORTRAIT_UP
+        );
+      }
+    } catch (error) {
+      console.error("Error changing screen orientation:", error);
+    }
   };
 
   const handleProgress = (data: { currentTime: number }) => {
@@ -201,14 +218,29 @@ export default function VideoDetailScreen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <View style={styles.headerSection}>
-        <View style={styles.videoContainer}>
+    <View
+      style={[
+        styles.container,
+        isFullscreen ? styles.fullscreenContainer : { paddingTop: insets.top },
+      ]}
+    >
+      {isFullscreen && <StatusBar hidden={true} />}
+      <View
+        style={[
+          styles.headerSection,
+          isFullscreen && styles.fullscreenVideoSection,
+        ]}
+      >
+        <View
+          style={[
+            styles.videoContainer,
+            isFullscreen && styles.fullscreenVideoContainer,
+          ]}
+        >
           <Video
             ref={videoRef}
-            source={videoData.videoUri}
+            source={videoData.videoUri as any}
             style={styles.video}
-            controls={false}
             paused={paused}
             muted={muted}
             resizeMode="contain"
@@ -221,6 +253,7 @@ export default function VideoDetailScreen() {
             muted={muted}
             currentTime={currentTime}
             duration={duration}
+            isFullscreen={isFullscreen}
             onPlayPause={handlePlayPause}
             onMute={handleMute}
             onSeek={handleSeek}
@@ -233,28 +266,32 @@ export default function VideoDetailScreen() {
           />
         </View>
 
-        <View style={styles.infoContainer}>
-          <Text style={styles.title} numberOfLines={1}>
-            {videoData.title}
-          </Text>
-          <ChannelInfo
-            icon={<PersonIcon width={20} height={20} fill={COLORS.white} />}
-            channelName={videoData.subtitle}
-            style={styles.channelInfo}
-          />
-        </View>
+        {!isFullscreen && (
+          <View style={styles.infoContainer}>
+            <Text style={styles.title} numberOfLines={1}>
+              {videoData.title}
+            </Text>
+            <ChannelInfo
+              icon={<PersonIcon width={20} height={20} fill={COLORS.white} />}
+              channelName={videoData.subtitle}
+              style={styles.channelInfo}
+            />
+          </View>
+        )}
       </View>
 
       {/* TabView Component - Takes up remaining space */}
-      <View style={styles.tabViewContainer}>
-        <TabView
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={{ width: layout.width }}
-          renderTabBar={renderTabBar}
-        />
-      </View>
+      {!isFullscreen && (
+        <View style={styles.tabViewContainer}>
+          <TabView
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}
+            initialLayout={{ width: layout.width }}
+            renderTabBar={renderTabBar}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -264,8 +301,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
+  fullscreenContainer: {
+    flex: 1,
+    backgroundColor: COLORS.black,
+  },
   headerSection: {
     // flex: 0,
+  },
+  fullscreenVideoSection: {
+    flex: 1,
   },
   tabViewContainer: {
     flex: 1,
@@ -274,6 +318,11 @@ const styles = StyleSheet.create({
     width: "100%",
     aspectRatio: 16 / 9,
     backgroundColor: COLORS.black,
+  },
+  fullscreenVideoContainer: {
+    width: "100%",
+    height: "100%",
+    aspectRatio: undefined,
   },
   video: {
     width: "100%",
