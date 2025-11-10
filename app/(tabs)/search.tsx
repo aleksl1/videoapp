@@ -1,4 +1,5 @@
 import CategoryCardVertical from "@/src/components/category/CategoryCardVertical";
+import SortModal, { SortOrder } from "@/src/components/common/SortModal";
 import SearchBar from "@/src/components/search/SearchBar";
 import { COLORS, fontConfig, SPACING } from "@/src/constants/theme";
 import { useYouTubeSearch } from "@/src/hooks/useYouTubeSearch";
@@ -10,6 +11,7 @@ import {
   FlatList,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,6 +24,8 @@ export default function SearchScreen() {
     (params.category as string) || ""
   );
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
+  const [sortOrder, setSortOrder] = useState<SortOrder>("relevance");
+  const [isSortModalVisible, setIsSortModalVisible] = useState(false);
 
   // Debounce search query - wait 500ms after user stops typing
   useEffect(() => {
@@ -33,6 +37,10 @@ export default function SearchScreen() {
   }, [searchQuery]);
 
   // Use YouTube search hook with debounced query
+  // Note: YouTube API doesn't support ascending date order, so we use "date" for both
+  // and reverse the results on the frontend for "date-asc"
+  const apiOrder = sortOrder === "date-asc" ? "date" : sortOrder;
+
   const {
     data,
     isLoading,
@@ -43,7 +51,7 @@ export default function SearchScreen() {
   } = useYouTubeSearch({
     query: debouncedQuery,
     maxResults: 10,
-    order: "relevance",
+    order: apiOrder,
     enabled: debouncedQuery.length >= 3,
   });
 
@@ -65,8 +73,13 @@ export default function SearchScreen() {
       (video, index, self) => index === self.findIndex((v) => v.id === video.id)
     );
 
+    // If sorting by oldest, reverse the array (YouTube API only supports newest first)
+    if (sortOrder === "date-asc") {
+      return [...uniqueVideos].reverse();
+    }
+
     return uniqueVideos;
-  }, [data]);
+  }, [data, sortOrder]);
 
   // Handle category from params - immediately set both states
   useEffect(() => {
@@ -87,11 +100,33 @@ export default function SearchScreen() {
 
   const handleClear = useCallback(() => {
     setSearchQuery("");
+    setDebouncedQuery("");
     // Clear category param from URL if it exists
     if (params.category) {
       router.setParams({ category: undefined });
     }
   }, [params.category, router]);
+
+  const handleSortPress = useCallback(() => {
+    setIsSortModalVisible(true);
+  }, []);
+
+  const handleSortConfirm = useCallback((order: SortOrder) => {
+    setSortOrder(order);
+  }, []);
+
+  const getSortLabel = useCallback((order: SortOrder) => {
+    switch (order) {
+      case "relevance":
+        return "Most popular";
+      case "date":
+        return "Upload date: Latest";
+      case "date-asc":
+        return "Upload date: Oldest";
+      default:
+        return "Most popular";
+    }
+  }, []);
 
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -135,7 +170,6 @@ export default function SearchScreen() {
           onChangeText={handleSearchChange}
           onSubmit={handleSearchSubmit}
           onClear={handleClear}
-          editable={true}
         />
       </View>
       {debouncedQuery && debouncedQuery.length >= 3 && (
@@ -146,9 +180,12 @@ export default function SearchScreen() {
               &ldquo;{debouncedQuery}&rdquo;
             </Text>
           </Text>
-          <Text style={styles.sortText}>
-            Sort by: <Text style={styles.sortBold}>Most popular</Text>
-          </Text>
+          <TouchableOpacity onPress={handleSortPress} activeOpacity={0.7}>
+            <Text style={styles.sortText}>
+              Sort by:{" "}
+              <Text style={styles.sortBold}>{getSortLabel(sortOrder)}</Text>
+            </Text>
+          </TouchableOpacity>
         </>
       )}
     </View>
@@ -228,6 +265,12 @@ export default function SearchScreen() {
         keyboardShouldPersistTaps="handled"
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
+      />
+      <SortModal
+        visible={isSortModalVisible}
+        onClose={() => setIsSortModalVisible(false)}
+        currentOrder={sortOrder}
+        onConfirm={handleSortConfirm}
       />
     </View>
   );

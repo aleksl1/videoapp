@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     paddingStart: SPACING.sm,
     paddingTop: 0,
     paddingBottom: SPACING.xs,
-    includeFontPadding: false,
+    includeFontPadding: false, // Android only
     ...fontConfig.md_light_weight,
   },
   clearButton: {
