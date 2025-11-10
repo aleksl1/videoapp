@@ -1,8 +1,8 @@
 import CategoryCardVertical from "@/src/components/category/CategoryCardVertical";
 import SearchBar from "@/src/components/search/SearchBar";
 import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -55,8 +55,25 @@ interface Video {
 export default function SearchScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const params = useLocalSearchParams<{ category?: string }>();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredVideos, setFilteredVideos] = useState<Video[]>(mockVideos);
+
+  // Handle category from params - always overwrites existing input
+  useEffect(() => {
+    if (params.category) {
+      const categoryValue = params.category as string;
+      setSearchQuery(categoryValue);
+
+      const lowerText = categoryValue.toLowerCase();
+      const filtered = mockVideos.filter(
+        (video) =>
+          video.title.toLowerCase().includes(lowerText) ||
+          video.channelTitle.toLowerCase().includes(lowerText)
+      );
+      setFilteredVideos(filtered);
+    }
+  }, [params.category]);
 
   const handleSearchChange = (text: string) => {
     setSearchQuery(text);
