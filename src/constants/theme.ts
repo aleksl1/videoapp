@@ -24,6 +24,7 @@ export const FONT_SIZES = {
   xxs: 10,
   xs: 12,
   sm: 13,
+  sm_light: 14,
   sm_medium: 15,
   md: 16,
   lg: 18,
@@ -80,6 +81,12 @@ export const fontConfig = StyleSheet.create({
     fontFamily: FONTS.regular,
     fontSize: FONT_SIZES.md,
     lineHeight: 24,
+    letterSpacing: 1,
+  },
+  sm_light: {
+    fontFamily: FONTS.regular,
+    fontSize: FONT_SIZES.sm_light,
+    lineHeight: 12,
     letterSpacing: 1,
   },
   sm_medium_compact: {
