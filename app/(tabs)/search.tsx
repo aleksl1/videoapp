@@ -139,7 +139,16 @@ export default function SearchScreen() {
       <CategoryCardVertical
         video={item}
         onPress={() => {
-          router.push(`/video/${item.id}`);
+          router.push({
+            pathname: `/video/[id]` as any,
+            params: {
+              id: item.id,
+              title: item.title,
+              channelTitle: item.channelTitle,
+              publishedAt: item.publishedAt,
+              description: item.description,
+            },
+          });
         }}
         style={styles.categoryCard}
       />

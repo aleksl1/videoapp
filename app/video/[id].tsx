@@ -111,7 +111,13 @@ const renderScene = SceneMap({
 });
 
 export default function VideoDetailScreen() {
-  const { id } = useLocalSearchParams();
+  const { id, title, channelTitle, publishedAt, description } = useLocalSearchParams<{
+    id: string;
+    title?: string;
+    channelTitle?: string;
+    publishedAt?: string;
+    description?: string;
+  }>();
   const insets = useSafeAreaInsets();
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
@@ -131,6 +137,12 @@ export default function VideoDetailScreen() {
   // const videoId = Array.isArray(id) ? id[0] : id;
   const videoId = "1";
   const videoData = videoId ? mockVideoData[videoId] : null;
+
+  // Use params if available, fallback to mock data
+  const displayTitle = title || videoData?.title;
+  const displayChannelTitle = channelTitle || videoData?.subtitle;
+  const displayPublishedAt = publishedAt;
+  const displayDescription = description;
 
   const renderTabBar = (props: any) => (
     <TabBar
@@ -271,11 +283,11 @@ export default function VideoDetailScreen() {
         {!isFullscreen && (
           <View style={styles.infoContainer}>
             <Text style={styles.title} numberOfLines={1}>
-              {videoData.title}
+              {displayTitle}
             </Text>
             <ChannelInfo
               icon={<PersonIcon width={20} height={20} fill={COLORS.white} />}
-              channelName={videoData.subtitle}
+              channelName={displayChannelTitle || ""}
               style={styles.channelInfo}
             />
           </View>
