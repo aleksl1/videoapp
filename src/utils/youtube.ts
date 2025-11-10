@@ -1,4 +1,4 @@
-import type { YouTubeSearchItem } from '@/src/types/youtube';
+import type { YouTubeSearchItem } from "@/src/types/youtube";
 
 export interface VideoCardData {
   id: string;
@@ -6,6 +6,7 @@ export interface VideoCardData {
   thumbnailUrl: string;
   channelTitle: string;
   publishedAt: string;
+  description: string;
 }
 
 /**
@@ -18,12 +19,15 @@ export function transformYouTubeVideo(item: YouTubeSearchItem): VideoCardData {
     thumbnailUrl: item.snippet.thumbnails.medium.url,
     channelTitle: item.snippet.channelTitle,
     publishedAt: item.snippet.publishedAt,
+    description: item.snippet.description,
   };
 }
 
 /**
  * Transforms an array of YouTube API search items
  */
-export function transformYouTubeVideos(items: YouTubeSearchItem[]): VideoCardData[] {
+export function transformYouTubeVideos(
+  items: YouTubeSearchItem[]
+): VideoCardData[] {
   return items.map(transformYouTubeVideo);
 }

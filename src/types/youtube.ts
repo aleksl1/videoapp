@@ -54,3 +54,38 @@ export interface YouTubeSearchResponse {
   };
   items: YouTubeSearchItem[];
 }
+
+export interface YouTubeVideoStatistics {
+  viewCount: string;
+  likeCount: string;
+  favoriteCount: string;
+  commentCount: string;
+}
+
+export interface YouTubeVideoContentDetails {
+  duration: string;
+  dimension: string;
+  definition: string;
+  caption: string;
+  licensedContent: boolean;
+  projection: string;
+}
+
+export interface YouTubeVideoDetails {
+  kind: string;
+  etag: string;
+  id: string;
+  snippet: YouTubeVideoSnippet;
+  statistics: YouTubeVideoStatistics;
+  contentDetails: YouTubeVideoContentDetails;
+}
+
+export interface YouTubeVideoDetailsResponse {
+  kind: string;
+  etag: string;
+  items: YouTubeVideoDetails[];
+  pageInfo: {
+    totalResults: number;
+    resultsPerPage: number;
+  };
+}

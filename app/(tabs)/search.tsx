@@ -23,20 +23,13 @@ export default function SearchScreen() {
   const [searchQuery, setSearchQuery] = useState(
     (params.category as string) || ""
   );
-  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
+  const [submittedQuery, setSubmittedQuery] = useState(
+    (params.category as string) || ""
+  );
   const [sortOrder, setSortOrder] = useState<SortOrder>("relevance");
   const [isSortModalVisible, setIsSortModalVisible] = useState(false);
 
-  // Debounce search query - wait 500ms after user stops typing
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  // Use YouTube search hook with debounced query
+  // Use YouTube search hook with submitted query
   // Note: YouTube API doesn't support ascending date order, so we use "date" for both
   // and reverse the results on the frontend for "date-asc"
   const apiOrder = sortOrder === "date-asc" ? "date" : sortOrder;
@@ -49,10 +42,10 @@ export default function SearchScreen() {
     hasNextPage,
     isFetchingNextPage,
   } = useYouTubeSearch({
-    query: debouncedQuery,
+    query: submittedQuery,
     maxResults: 10,
     order: apiOrder,
-    enabled: debouncedQuery.length >= 3,
+    enabled: submittedQuery.length >= 3,
   });
 
   // Get total results from YouTube API
@@ -86,7 +79,7 @@ export default function SearchScreen() {
     if (params.category) {
       const categoryValue = params.category as string;
       setSearchQuery(categoryValue);
-      setDebouncedQuery(categoryValue); // Set immediately for category params
+      setSubmittedQuery(categoryValue); // Set immediately for category params
     }
   }, [params.category]);
 
@@ -95,12 +88,13 @@ export default function SearchScreen() {
   }, []);
 
   const handleSearchSubmit = useCallback(() => {
-    // Search is handled automatically by the query hook
-  }, []);
+    // Submit the search query when user presses search on keyboard
+    setSubmittedQuery(searchQuery);
+  }, [searchQuery]);
 
   const handleClear = useCallback(() => {
     setSearchQuery("");
-    setDebouncedQuery("");
+    setSubmittedQuery("");
     // Clear category param from URL if it exists
     if (params.category) {
       router.setParams({ category: undefined });
@@ -139,7 +133,16 @@ export default function SearchScreen() {
       <CategoryCardVertical
         video={item}
         onPress={() => {
-          router.push(`/video/${item.id}`);
+          router.push({
+            pathname: `/video/[id]` as any,
+            params: {
+              id: item.id,
+              title: item.title,
+              channelTitle: item.channelTitle,
+              publishedAt: item.publishedAt,
+              description: item.description,
+            },
+          });
         }}
         style={styles.categoryCard}
       />
@@ -160,35 +163,49 @@ export default function SearchScreen() {
     );
   }, [isFetchingNextPage]);
 
-  const HeaderComponent = () => (
-    <View
-      style={[styles.headerWrapper, { paddingTop: insets.top + SPACING.md }]}
-    >
-      <View style={styles.searchBarContainer}>
-        <SearchBar
-          value={searchQuery}
-          onChangeText={handleSearchChange}
-          onSubmit={handleSearchSubmit}
-          onClear={handleClear}
-        />
+  const HeaderComponent = useMemo(
+    () => (
+      <View
+        style={[styles.headerWrapper, { paddingTop: insets.top + SPACING.md }]}
+      >
+        <View style={styles.searchBarContainer}>
+          <SearchBar
+            value={searchQuery}
+            onChangeText={handleSearchChange}
+            onSubmit={handleSearchSubmit}
+            onClear={handleClear}
+          />
+        </View>
+        {submittedQuery && submittedQuery.length >= 3 && (
+          <>
+            <Text style={styles.resultsText}>
+              {totalResults} results found for:{" "}
+              <Text style={styles.resultsBold}>
+                &ldquo;{submittedQuery}&rdquo;
+              </Text>
+            </Text>
+            <TouchableOpacity onPress={handleSortPress} activeOpacity={0.7}>
+              <Text style={styles.sortText}>
+                Sort by:{" "}
+                <Text style={styles.sortBold}>{getSortLabel(sortOrder)}</Text>
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
-      {debouncedQuery && debouncedQuery.length >= 3 && (
-        <>
-          <Text style={styles.resultsText}>
-            {totalResults} results found for:{" "}
-            <Text style={styles.resultsBold}>
-              &ldquo;{debouncedQuery}&rdquo;
-            </Text>
-          </Text>
-          <TouchableOpacity onPress={handleSortPress} activeOpacity={0.7}>
-            <Text style={styles.sortText}>
-              Sort by:{" "}
-              <Text style={styles.sortBold}>{getSortLabel(sortOrder)}</Text>
-            </Text>
-          </TouchableOpacity>
-        </>
-      )}
-    </View>
+    ),
+    [
+      insets.top,
+      searchQuery,
+      handleSearchChange,
+      handleSearchSubmit,
+      handleClear,
+      submittedQuery,
+      totalResults,
+      handleSortPress,
+      getSortLabel,
+      sortOrder,
+    ]
   );
 
   const emptyComponent = useMemo(() => {
@@ -226,14 +243,14 @@ export default function SearchScreen() {
       return (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            No results found for &ldquo;{debouncedQuery}&rdquo;
+            No results found for &ldquo;{submittedQuery}&rdquo;
           </Text>
         </View>
       );
     }
 
     return null;
-  }, [searchQuery, debouncedQuery, isError, videos.length, isLoading]);
+  }, [searchQuery, submittedQuery, isError, videos.length, isLoading]);
 
   const keyExtractor = useCallback(
     (item: VideoCardData, index: number) => `${item.id}-${index}`,
@@ -243,7 +260,7 @@ export default function SearchScreen() {
   if (isLoading && !data) {
     return (
       <View style={styles.container}>
-        <HeaderComponent />
+        {HeaderComponent}
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
         </View>

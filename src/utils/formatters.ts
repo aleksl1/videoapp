@@ -12,14 +12,25 @@ export function formatDuration(seconds: number): string {
   return `${minutes}:${secs.toString().padStart(2, '0')}`;
 }
 
-export function formatViewCount(count: number): string {
+export function formatNumber(num: number | string, suffix: string = ''): string {
+  const count = typeof num === 'string' ? parseInt(num, 10) : num;
+  
+  if (isNaN(count)) return `0${suffix}`;
+  
+  if (count >= 1000000000) {
+    return `${(count / 1000000000).toFixed(1)}B${suffix}`;
+  }
   if (count >= 1000000) {
-    return `${(count / 1000000).toFixed(1)}M views`;
+    return `${(count / 1000000).toFixed(1)}M${suffix}`;
   }
   if (count >= 1000) {
-    return `${(count / 1000).toFixed(1)}K views`;
+    return `${(count / 1000).toFixed(1)}K${suffix}`;
   }
-  return `${count} views`;
+  return `${count}${suffix}`;
+}
+
+export function formatViewCount(count: number): string {
+  return formatNumber(count, ' views');
 }
 
 export function formatDate(timestamp: number): string {
