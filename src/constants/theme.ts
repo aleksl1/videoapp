@@ -76,6 +76,13 @@ export const fontConfig = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 1,
   },
+  xs_semi_bold: {
+    fontFamily: "Poppins",
+    fontWeight: "600",
+    fontSize: FONT_SIZES.xs,
+    lineHeight: 24,
+    letterSpacing: 1,
+  },
   xs_compact: {
     fontFamily: "Poppins",
     fontWeight: "500",
@@ -86,6 +93,14 @@ export const fontConfig = StyleSheet.create({
   xxs: {
     fontFamily: "Poppins",
     fontWeight: "400",
+    fontSize: FONT_SIZES.xxs,
+    lineHeight: 24,
+    letterSpacing: 1,
+    textAlign: "center",
+  },
+  xxs_semi_bold: {
+    fontFamily: "Poppins",
+    fontWeight: "600",
     fontSize: FONT_SIZES.xxs,
     lineHeight: 24,
     letterSpacing: 1,

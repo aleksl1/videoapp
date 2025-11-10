@@ -78,7 +78,9 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingStart: SPACING.sm,
+    paddingTop: 0,
     paddingBottom: SPACING.xs,
+    includeFontPadding: false,
     ...fontConfig.md_light_weight,
   },
   clearButton: {
