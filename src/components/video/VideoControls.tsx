@@ -13,7 +13,6 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AirplayIcon from "../icons/videoControls/AirplayIcon";
 import BackwardIcon from "../icons/videoControls/BackwardIcon";
-import ExitFullscreenIcon from "../icons/videoControls/ExitFullscreenIcon";
 import ForwardIcon from "../icons/videoControls/ForwardIcon";
 import FullscreenIcon from "../icons/videoControls/FullscreenIcon";
 import LeftArrowIcon from "../icons/videoControls/LeftArrowIcon";
@@ -198,19 +197,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
                 style={styles.fullscreenButton}
                 onPress={onFullscreen}
               >
-                {isFullscreen ? (
-                  <ExitFullscreenIcon
-                    width={24}
-                    height={24}
-                    stroke={COLORS.white}
-                  />
-                ) : (
-                  <FullscreenIcon
-                    width={24}
-                    height={24}
-                    stroke={COLORS.white}
-                  />
-                )}
+                <FullscreenIcon width={24} height={24} stroke={COLORS.white} />
               </TouchableOpacity>
             </View>
           </View>

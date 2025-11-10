@@ -248,6 +248,8 @@ export default function VideoDetailScreen() {
             onLoad={handleLoad}
             progressUpdateInterval={250}
           />
+
+          {/* TODO: full screen controls */}
           <VideoControls
             paused={paused}
             muted={muted}
