@@ -61,4 +61,11 @@ export const fontConfig = StyleSheet.create({
     lineHeight: 16,
     letterSpacing: 0,
   },
+  xs: {
+    fontFamily: "Poppins",
+    fontWeight: "400",
+    fontSize: FONT_SIZES.xs,
+    lineHeight: 24,
+    letterSpacing: 1,
+  },
 });

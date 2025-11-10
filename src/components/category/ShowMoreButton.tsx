@@ -1,25 +1,17 @@
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { fontConfig } from "@/src/constants/theme";
+import { Pressable, PressableProps, StyleSheet, Text } from "react-native";
 
-interface ShowMoreButtonProps {
-  category: string;
-  onPress: () => void;
-}
-
-export default function ShowMoreButton({ category, onPress }: ShowMoreButtonProps) {
+export default function ShowMoreButton(props: PressableProps) {
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
+    <Pressable {...props}>
       <Text style={styles.text}>Show more</Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  button: {
-    padding: 12,
-    alignItems: 'center',
-  },
   text: {
-    color: '#007AFF',
-    fontSize: 16,
+    textDecorationLine: "underline",
+    ...fontConfig.xs,
   },
 });
