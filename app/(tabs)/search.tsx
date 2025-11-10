@@ -94,15 +94,17 @@ export default function SearchScreen() {
     <View
       style={[
         styles.headerWrapper,
-        { paddingTop: insets.top, paddingHorizontal: SPACING.xl },
+        { paddingTop: insets.top + SPACING.md },
       ]}
     >
-      <SearchBar
-        value={searchQuery}
-        onChangeText={handleSearchChange}
-        onSubmit={handleSearchSubmit}
-        editable={true}
-      />
+      <View style={styles.searchBarContainer}>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={handleSearchChange}
+          onSubmit={handleSearchSubmit}
+          editable={true}
+        />
+      </View>
       <View style={styles.resultsHeader}>
         <Text style={styles.resultsText}>
           {searchQuery
@@ -141,7 +143,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
   },
   headerWrapper: {
+    paddingHorizontal: SPACING.xl,
     paddingBottom: SPACING.sm,
+  },
+  searchBarContainer: {
+    height: 44,
+    marginBottom: SPACING.sm,
   },
   resultsHeader: {
     paddingVertical: SPACING.md,

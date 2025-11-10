@@ -17,7 +17,10 @@ export default function HomeScreen() {
       <View
         style={[
           styles.searchHeader,
-          { paddingTop: insets.top, paddingHorizontal: SPACING.xl },
+          {
+            paddingTop: insets.top + SPACING.md,
+            paddingHorizontal: SPACING.xl,
+          },
         ]}
       >
         <View style={styles.searchRow}>
@@ -74,7 +77,8 @@ const styles = StyleSheet.create({
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.md,
+    gap: SPACING.sm,
+    paddingBottom: SPACING.sm,
   },
   searchPressable: {
     flex: 1,

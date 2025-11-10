@@ -24,7 +24,7 @@ export default function SearchBar({
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
-        <SearchIcon height={18} width={18} />
+        <SearchIcon height={24} width={24} />
         <TextInput
           style={styles.input}
           value={value}
@@ -43,19 +43,22 @@ export default function SearchBar({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    maxHeight: 44,
   },
   innerContainer: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
     flexDirection: "row",
     alignItems: "center",
     borderRadius: BORDER_RADIUS.md,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: COLORS.primary,
   },
   input: {
     flex: 1,
-    paddingStart: SPACING.md,
-    ...fontConfig.md,
+    paddingStart: SPACING.sm,
+    paddingBottom: SPACING.xs,
+    ...fontConfig.md_light_weight,
   },
 });
