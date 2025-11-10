@@ -1,6 +1,6 @@
 import { COLORS } from "@/src/constants/theme";
 import { useYouTubeSearch } from "@/src/hooks/useYouTubeSearch";
-import { transformYouTubeVideos } from "@/src/utils/youtube";
+import { transformYouTubeVideos, VideoCardData } from "@/src/utils/youtube";
 import { router } from "expo-router";
 import React from "react";
 import {
@@ -18,7 +18,14 @@ interface CategoryListProps {
 }
 
 export default function CategoryList({ category }: CategoryListProps) {
-  const { data, isLoading, isError } = useYouTubeSearch({
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useYouTubeSearch({
     query: category,
     maxResults: 10,
     order: "relevance",
@@ -26,8 +33,17 @@ export default function CategoryList({ category }: CategoryListProps) {
 
   const videos = React.useMemo(() => {
     if (!data?.pages) return [];
-    const firstPage = data.pages[0];
-    return transformYouTubeVideos(firstPage.items);
+
+    // Flatten all pages into a single array
+    const allVideos = data.pages.flatMap((page) => transformYouTubeVideos(page.items));
+
+    // Deduplicate videos by ID
+    const uniqueVideos = allVideos.filter(
+      (video, index, self) =>
+        index === self.findIndex((v) => v.id === video.id)
+    );
+
+    return uniqueVideos;
   }, [data]);
 
   const handleShowMore = () => {
@@ -38,9 +54,24 @@ export default function CategoryList({ category }: CategoryListProps) {
     router.push(`/video/${videoId}`);
   };
 
-  const renderCategoryCard = ({ item }: { item: any }) => (
+  const handleEndReached = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
+
+  const renderCategoryCard = ({ item }: { item: VideoCardData }) => (
     <CategoryCard video={item} onPress={() => handleVideoPress(item.id)} />
   );
+
+  const renderFooter = () => {
+    if (!isFetchingNextPage) return null;
+    return (
+      <View style={styles.footerLoader}>
+        <ActivityIndicator size="small" color={COLORS.primary} />
+      </View>
+    );
+  };
 
   if (isError) {
     return (
@@ -66,14 +97,17 @@ export default function CategoryList({ category }: CategoryListProps) {
           <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
       ) : (
-        <FlatList
+        <FlatList<VideoCardData>
           horizontal
           data={videos}
           renderItem={renderCategoryCard}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
           nestedScrollEnabled={true}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
         />
       )}
     </View>
@@ -112,5 +146,11 @@ const styles = StyleSheet.create({
   errorText: {
     color: COLORS.primary,
     fontSize: 14,
+  },
+  footerLoader: {
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
