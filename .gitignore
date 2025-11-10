@@ -44,3 +44,5 @@ app-example
 
 # task requirements
 requirements.md
+
+.env

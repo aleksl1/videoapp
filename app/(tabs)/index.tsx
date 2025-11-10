@@ -17,7 +17,10 @@ export default function HomeScreen() {
       <View
         style={[
           styles.searchHeader,
-          { paddingTop: insets.top, paddingHorizontal: SPACING.xl },
+          {
+            paddingTop: insets.top + SPACING.md,
+            paddingHorizontal: SPACING.xl,
+          },
         ]}
       >
         <View style={styles.searchRow}>
@@ -48,26 +51,7 @@ export default function HomeScreen() {
         ]}
       >
         {VIDEO_CATEGORIES?.map((category) => (
-          <CategoryList
-            key={category}
-            category={category}
-            videos={[
-              {
-                id: "1",
-                title: "Video 1",
-                thumbnailUrl: "https://via.placeholder.com/150",
-                channelTitle: "Sample Channel",
-                publishedAt: "2023-10-01T00:00:00Z",
-              },
-              {
-                id: "2",
-                title: "Video 2",
-                thumbnailUrl: "https://via.placeholder.com/150",
-                channelTitle: "Another Channel",
-                publishedAt: "2023-10-02T00:00:00Z",
-              },
-            ]}
-          />
+          <CategoryList key={category} category={category} />
         ))}
       </ScrollView>
     </View>
@@ -93,7 +77,8 @@ const styles = StyleSheet.create({
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.md,
+    gap: SPACING.sm,
+    paddingBottom: SPACING.sm,
   },
   searchPressable: {
     flex: 1,
@@ -103,7 +88,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: SPACING.xl,
     paddingTop: SPACING.xl,
   },
 });
