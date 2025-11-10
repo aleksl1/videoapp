@@ -52,6 +52,7 @@ export const FONTS = {
 } as const;
 
 export const BORDER_RADIUS = {
+  sm: 8,
   md: 16,
 } as const;
 

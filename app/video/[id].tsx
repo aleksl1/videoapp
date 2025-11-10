@@ -61,14 +61,28 @@ const DetailsRoute = () => (
     <Text style={styles.sectionTitle}>Statistics</Text>
     <View style={styles.statisticsContainer}>
       <Chip
-        icon={<ViewsIcon width={24} height={24} stroke={COLORS.white} />}
+        icon={
+          <ViewsIcon
+            width={20}
+            height={20}
+            stroke={COLORS.white}
+            strokeWidth={3}
+          />
+        }
         label="Views"
         value="13123131231"
         backgroundColor={COLORS.primary}
         textColor={COLORS.white}
       />
       <Chip
-        icon={<LikesIcon width={24} height={24} stroke={COLORS.white} />}
+        icon={
+          <LikesIcon
+            width={20}
+            height={20}
+            stroke={COLORS.white}
+            strokeWidth={3}
+          />
+        }
         label="Likes"
         value="32156"
         backgroundColor={COLORS.primary}
@@ -103,7 +117,8 @@ export default function VideoDetailScreen() {
     { key: "notes", title: "Notes" },
   ]);
 
-  const videoId = Array.isArray(id) ? id[0] : id;
+  // const videoId = Array.isArray(id) ? id[0] : id;
+  const videoId = "1";
   const videoData = videoId ? mockVideoData[videoId] : null;
 
   const renderTabBar = (props: any) => (
@@ -113,7 +128,8 @@ export default function VideoDetailScreen() {
       style={styles.tabBar}
       labelStyle={styles.tabLabel}
       activeColor={COLORS.primary}
-      inactiveColor={COLORS.outline}
+      inactiveColor={COLORS.primary}
+      inactiveTintColor={COLORS.primary}
     />
   );
 
@@ -138,12 +154,15 @@ export default function VideoDetailScreen() {
         </View>
 
         <View style={styles.infoContainer}>
-          <Text style={styles.title}>{videoData.title}</Text>
+          <Text style={styles.title} numberOfLines={1}>
+            {videoData.title}
+          </Text>
           <ChannelInfo
             icon={
               <ChannelNameIcon width={20} height={20} fill={COLORS.white} />
             }
             channelName={videoData.subtitle}
+            style={styles.channelInfo}
           />
         </View>
       </View>
@@ -171,7 +190,7 @@ const styles = StyleSheet.create({
     // flex: 0,
   },
   tabViewContainer: {
-    flex: 2,
+    flex: 1,
   },
   videoContainer: {
     width: "100%",
@@ -183,12 +202,15 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   infoContainer: {
-    padding: SPACING.xl,
+    padding: SPACING.md,
+    paddingBottom: 0,
   },
   title: {
-    ...fontConfig.md,
+    ...fontConfig.lg,
+    lineHeight: 12,
     color: COLORS.black,
     marginBottom: SPACING.sm,
+    paddingTop: SPACING.md,
   },
   errorText: {
     ...fontConfig.md,
@@ -197,6 +219,7 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     backgroundColor: COLORS.white,
+    marginHorizontal: SPACING.md,
   },
   indicator: {
     backgroundColor: COLORS.primary,
@@ -209,19 +232,19 @@ const styles = StyleSheet.create({
   },
   tabContent: {
     flex: 1,
-    padding: SPACING.xl,
+    padding: SPACING.lg,
   },
   sectionTitle: {
-    ...fontConfig.xxl,
-    color: COLORS.black,
-    fontWeight: "600",
-    marginBottom: SPACING.md,
-    marginTop: SPACING.md,
+    ...fontConfig.xxs_semi_bold,
+    lineHeight: 12,
+    color: COLORS.primary,
+    marginBottom: SPACING.sm,
+    textAlign: "left",
   },
   description: {
-    ...fontConfig.md,
-    color: COLORS.black,
-    lineHeight: 24,
+    ...fontConfig.xs,
+    lineHeight: 12,
+    color: COLORS.primary,
     marginBottom: SPACING.md,
   },
   placeholder: {
@@ -231,7 +254,10 @@ const styles = StyleSheet.create({
   },
   statisticsContainer: {
     flexDirection: "row",
-    gap: SPACING.md,
+    justifyContent: "space-between",
     marginBottom: SPACING.md,
+  },
+  channelInfo: {
+    margin: SPACING.md,
   },
 });

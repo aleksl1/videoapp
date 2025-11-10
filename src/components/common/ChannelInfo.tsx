@@ -1,12 +1,13 @@
 import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
 import React, { ReactNode } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 
 interface ChannelInfoProps {
   icon: ReactNode;
   channelName: string;
   iconBackgroundColor?: string;
   textColor?: string;
+  style?: StyleProp<ViewStyle>;
 }
 
 export default function ChannelInfo({
@@ -14,9 +15,10 @@ export default function ChannelInfo({
   channelName,
   iconBackgroundColor = COLORS.primary,
   textColor = COLORS.primary,
+  style,
 }: ChannelInfoProps) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <View
         style={[styles.iconContainer, { backgroundColor: iconBackgroundColor }]}
       >
@@ -33,7 +35,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.sm,
+    gap: SPACING.md,
   },
   iconContainer: {
     width: 48,
@@ -46,4 +48,3 @@ const styles = StyleSheet.create({
     ...fontConfig.md,
   },
 });
-
