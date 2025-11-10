@@ -1,11 +1,17 @@
 import CategoryCardVertical from "@/src/components/category/CategoryCardVertical";
 import SearchBar from "@/src/components/search/SearchBar";
-import { COLORS, SPACING, fontConfig } from "@/src/constants/theme";
+import { COLORS, fontConfig, SPACING } from "@/src/constants/theme";
 import { useYouTubeSearch } from "@/src/hooks/useYouTubeSearch";
 import { transformYouTubeVideos, VideoCardData } from "@/src/utils/youtube";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SearchScreen() {
@@ -40,6 +46,11 @@ export default function SearchScreen() {
     order: "relevance",
     enabled: debouncedQuery.length >= 3,
   });
+
+  // Get total results from YouTube API
+  const totalResults = useMemo(() => {
+    return data?.pages[0]?.pageInfo?.totalResults ?? 0;
+  }, [data]);
 
   // Transform and deduplicate videos
   const videos = useMemo(() => {
@@ -130,7 +141,7 @@ export default function SearchScreen() {
       {debouncedQuery && debouncedQuery.length >= 3 && (
         <>
           <Text style={styles.resultsText}>
-            {videos.length} results found for:{" "}
+            {totalResults} results found for:{" "}
             <Text style={styles.resultsBold}>
               &ldquo;{debouncedQuery}&rdquo;
             </Text>
