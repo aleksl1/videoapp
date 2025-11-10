@@ -1,9 +1,9 @@
-import { COLORS, SPACING } from "@/src/constants/theme";
-import Slider from "@react-native-community/slider";
+import { COLORS, fontConfig, SPACING } from "@/src/constants/theme";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Animated,
+  GestureResponderEvent,
   Pressable,
   StyleSheet,
   Text,
@@ -18,7 +18,6 @@ import LeftArrowIcon from "../icons/videoControls/LeftArrowIcon";
 import PauseIcon from "../icons/videoControls/PauseIcon";
 import PlayIcon from "../icons/videoControls/PlayIcon";
 import VolumeIcon from "../icons/videoControls/VolumeIcon";
-import VolumeMuteIcon from "../icons/VolumeMuteIcon";
 
 interface VideoControlsProps {
   paused: boolean;
@@ -117,6 +116,17 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     onSeekEnd(value);
   };
 
+  const handleProgressBarPress = (event: GestureResponderEvent) => {
+    const { locationX } = event.nativeEvent;
+    const target = event.currentTarget as any;
+
+    target.measure((_x: number, _y: number, width: number) => {
+      const position = locationX / width;
+      const newTime = position * duration;
+      handleSeekEnd(newTime);
+    });
+  };
+
   return (
     <Pressable style={styles.container} onPress={toggleControls}>
       {showControls && (
@@ -132,15 +142,11 @@ const VideoControls: React.FC<VideoControlsProps> = ({
 
             <View style={styles.topRightControls}>
               <TouchableOpacity style={styles.iconButton} onPress={onMute}>
-                {muted ? (
-                  <VolumeMuteIcon
-                    width={24}
-                    height={24}
-                    stroke={COLORS.white}
-                  />
-                ) : (
-                  <VolumeIcon width={24} height={24} stroke={COLORS.white} />
-                )}
+                <VolumeIcon
+                  width={24}
+                  height={24}
+                  stroke={muted ? COLORS.error : COLORS.white}
+                />
               </TouchableOpacity>
               {onAirplay && (
                 <TouchableOpacity style={styles.iconButton} onPress={onAirplay}>
@@ -153,7 +159,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
           {/* Center Controls */}
           <View style={styles.centerControls}>
             <TouchableOpacity style={styles.controlButton} onPress={onBackward}>
-              <BackwardIcon width={40} height={40} stroke={COLORS.white} />
+              <BackwardIcon width={24} height={24} stroke={COLORS.white} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -161,48 +167,71 @@ const VideoControls: React.FC<VideoControlsProps> = ({
               onPress={onPlayPause}
             >
               {paused ? (
-                <PlayIcon width={48} height={48} stroke={COLORS.white} />
+                <PlayIcon width={32} height={32} stroke={COLORS.white} />
               ) : (
-                <PauseIcon width={48} height={48} stroke={COLORS.white} />
+                <PauseIcon width={32} height={32} stroke={COLORS.white} />
               )}
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.controlButton} onPress={onForward}>
-              <ForwardIcon width={40} height={40} stroke={COLORS.white} />
+              <ForwardIcon width={24} height={24} stroke={COLORS.white} />
             </TouchableOpacity>
           </View>
 
           {/* Bottom Controls */}
           <View style={styles.bottomControls}>
-            <View style={styles.timeContainer}>
-              <Text style={styles.timeText}>
-                {formatTime(isSeeking ? seekTime : currentTime)}
-              </Text>
-              <Text style={styles.timeSeparator}>/</Text>
-              <Text style={styles.timeText}>{formatTime(duration)}</Text>
-            </View>
+            <View style={styles.bottomControlsTop}>
+              <View style={styles.timeContainer}>
+                <Text style={styles.timeText}>
+                  {formatTime(isSeeking ? seekTime : currentTime)}
+                </Text>
+                <Text style={styles.timeSeparator}>/</Text>
+                <Text style={styles.timeText}>{formatTime(duration)}</Text>
+              </View>
 
-            <View style={styles.progressContainer}>
-              <Slider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={duration}
-                value={isSeeking ? seekTime : currentTime}
-                onValueChange={handleSeekChange}
-                onSlidingStart={handleSeekStart}
-                onSlidingComplete={handleSeekEnd}
-                minimumTrackTintColor={COLORS.error}
-                maximumTrackTintColor="rgba(255, 255, 255, 0.3)"
-                thumbTintColor={COLORS.error}
+              <TouchableOpacity
+                style={styles.fullscreenButton}
+                onPress={onFullscreen}
+              >
+                <FullscreenIcon width={24} height={24} stroke={COLORS.white} />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Progress Bar - Full Width at Bottom */}
+          <View style={styles.progressBarContainer}>
+            <View style={styles.progressBarTrack}>
+              {/* Background track */}
+              <View style={styles.progressBarBackground} />
+              {/* Filled track */}
+              <View
+                style={[
+                  styles.progressBarFilled,
+                  {
+                    width: `${
+                      duration > 0 ? (currentTime / duration) * 100 : 0
+                    }%`,
+                  },
+                ]}
+              />
+              {/* Thumb */}
+              <Pressable
+                style={[
+                  styles.progressBarThumb,
+                  {
+                    left: `${
+                      duration > 0 ? (currentTime / duration) * 100 : 0
+                    }%`,
+                  },
+                ]}
+                onPress={(e) => e.stopPropagation()}
+              />
+              {/* Touch area for seeking */}
+              <Pressable
+                style={styles.progressBarTouchArea}
+                onPress={handleProgressBarPress}
               />
             </View>
-
-            <TouchableOpacity
-              style={styles.fullscreenButton}
-              onPress={onFullscreen}
-            >
-              <FullscreenIcon width={24} height={24} stroke={COLORS.white} />
-            </TouchableOpacity>
           </View>
         </Animated.View>
       )}
@@ -219,7 +248,9 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0, 0, 0, 0.4)",
     justifyContent: "space-between",
-    padding: SPACING.md,
+    paddingTop: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    paddingBottom: 0,
   },
   topControls: {
     flexDirection: "row",
@@ -231,9 +262,11 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   iconButton: {
-    padding: SPACING.xs,
+    padding: SPACING.sm,
     backgroundColor: "rgba(0, 0, 0, 0.3)",
-    borderRadius: 8,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
   },
   centerControls: {
     flexDirection: "row",
@@ -242,44 +275,86 @@ const styles = StyleSheet.create({
     gap: SPACING.xl * 2,
   },
   controlButton: {
-    padding: SPACING.md,
+    padding: SPACING.sm,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderRadius: 50,
   },
   playButton: {
-    padding: SPACING.lg,
+    padding: SPACING.sm,
   },
   bottomControls: {
+    paddingBottom: SPACING.sm,
+  },
+  bottomControlsTop: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    gap: SPACING.sm,
   },
   timeContainer: {
     flexDirection: "row",
-    alignItems: "center",
-    minWidth: 100,
+    alignItems: "flex-start",
+    marginStart: -SPACING.sm,
   },
   timeText: {
     color: COLORS.white,
-    fontSize: 14,
-    fontWeight: "600",
+    ...fontConfig.xxs_semi_bold,
   },
   timeSeparator: {
     color: COLORS.white,
-    fontSize: 14,
-    marginHorizontal: 4,
+    ...fontConfig.xxs_semi_bold,
   },
-  progressContainer: {
-    flex: 1,
+  progressBarContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 4,
+    justifyContent: "flex-end",
+    backgroundColor: "transparent",
   },
-  slider: {
+  progressBarTrack: {
     width: "100%",
-    height: 40,
+    height: 4,
+    justifyContent: "flex-end",
+    position: "relative",
+  },
+  progressBarBackground: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 4,
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    borderRadius: 2,
+  },
+  progressBarFilled: {
+    position: "absolute",
+    left: 0,
+    bottom: 0,
+    height: 4,
+    backgroundColor: COLORS.error,
+    borderRadius: 2,
+  },
+  progressBarThumb: {
+    position: "absolute",
+    bottom: -4, // Center vertically on the 4px track
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: COLORS.error,
+    marginLeft: -6, // Center the thumb on the position
+    zIndex: 2,
+  },
+  progressBarTouchArea: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: -12,
+    bottom: -4,
+    zIndex: 1,
   },
   fullscreenButton: {
-    padding: SPACING.xs,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
-    borderRadius: 8,
+    marginBottom: SPACING.md,
   },
 });
 

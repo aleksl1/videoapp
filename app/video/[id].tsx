@@ -9,7 +9,6 @@ import { useLocalSearchParams } from "expo-router";
 import { useRef, useState } from "react";
 import {
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -189,6 +188,10 @@ export default function VideoDetailScreen() {
     setDuration(data.duration);
   };
 
+  const handleAirplay = () => {
+    console.log("Airplay");
+  };
+
   if (!videoData) {
     return (
       <View style={styles.container}>
@@ -198,10 +201,9 @@ export default function VideoDetailScreen() {
   }
 
   return (
-    <View style={[styles.container]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.headerSection}>
         <View style={styles.videoContainer}>
-          <StatusBar hidden={true} />
           <Video
             ref={videoRef}
             source={videoData.videoUri}
@@ -227,6 +229,7 @@ export default function VideoDetailScreen() {
             onBackward={handleBackward}
             onForward={handleForward}
             onFullscreen={handleFullscreen}
+            onAirplay={handleAirplay}
           />
         </View>
 

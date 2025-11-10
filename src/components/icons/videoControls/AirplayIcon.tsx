@@ -10,6 +10,7 @@ function SvgComponent(props: SvgProps) {
         stroke={props.stroke || COLORS.white}
         strokeLinecap="round"
         strokeLinejoin="round"
+        strokeWidth={2}
       />
     </Svg>
   );
