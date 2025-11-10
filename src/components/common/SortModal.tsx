@@ -84,6 +84,11 @@ export default function SortModal({
                       style={styles.radioOption}
                       onPress={() => setSelectedOrder(option.value)}
                       activeOpacity={0.7}
+                      accessibilityLabel={option.label}
+                      accessibilityRole="radio"
+                      accessibilityState={{
+                        checked: selectedOrder === option.value,
+                      }}
                     >
                       <View style={styles.radioButton}>
                         {selectedOrder === option.value && (
