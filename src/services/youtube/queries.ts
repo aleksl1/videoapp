@@ -1,19 +1,31 @@
-// YouTube API query functions
-// TODO: Implement search.list endpoint
-// TODO: Implement videos.list endpoint
-// TODO: Add category-based searches
+import { youtubeApiGet } from './api';
+import type { YouTubeSearchResponse, YouTubeSearchParams } from '@/src/types/youtube';
 
-export async function searchVideos(query: string, pageToken?: string) {
-  // TODO: Implement video search
-  return [];
+export async function searchVideos(
+  params: YouTubeSearchParams,
+  pageToken?: string
+): Promise<YouTubeSearchResponse> {
+  const searchParams = {
+    part: 'snippet',
+    q: params.query,
+    type: params.type || 'video',
+    maxResults: params.maxResults || 10,
+    order: params.order || 'relevance',
+    ...(pageToken && { pageToken }),
+  };
+
+  return youtubeApiGet<YouTubeSearchResponse>('/search', searchParams);
 }
 
 export async function getVideoDetails(videoId: string) {
-  // TODO: Implement video details fetch
-  return null;
+  const params = {
+    part: 'snippet,contentDetails,statistics',
+    id: videoId,
+  };
+
+  return youtubeApiGet('/videos', params);
 }
 
-export async function getVideosByCategory(category: string) {
-  // TODO: Implement category-based video search
-  return [];
+export async function getVideosByCategory(category: string, pageToken?: string) {
+  return searchVideos({ query: category, maxResults: 10 }, pageToken);
 }
