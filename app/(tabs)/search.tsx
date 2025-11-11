@@ -123,16 +123,7 @@ export default function SearchScreen() {
       <CategoryCardVertical
         video={item}
         onPress={() => {
-          router.push({
-            pathname: `/video/[id]` as any,
-            params: {
-              id: item.id,
-              title: item.title,
-              channelTitle: item.channelTitle,
-              publishedAt: item.publishedAt,
-              description: item.description,
-            },
-          });
+          router.push(`/video/${item.id}`);
         }}
         style={styles.categoryCard}
       />
@@ -233,7 +224,9 @@ export default function SearchScreen() {
       return (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            No results found for &ldquo;{submittedQuery}&rdquo;
+            {submittedQuery.length > 0 && submittedQuery === searchQuery
+              ? "No results found"
+              : "Press search on keyboard to find videos"}
           </Text>
         </View>
       );
