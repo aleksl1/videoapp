@@ -23,7 +23,6 @@ videoapp/
 │   │   ├── video/
 │   │   │   ├── VideoPlayer.tsx         # Main video player component
 │   │   │   ├── VideoControls.tsx       # Player controls
-│   │   │   ├── MinimizedPlayer.tsx     # Picture-in-picture player
 │   │   │   └── FullscreenPlayer.tsx    # Fullscreen mode
 │   │   ├── category/
 │   │   │   ├── CategoryList.tsx        # Horizontal scrolling list
@@ -60,7 +59,7 @@ videoapp/
 │   │   └── useNotifications.ts         # Notification management
 │   │
 │   ├── context/                 # React Context providers
-│   │   └── VideoPlayerContext.tsx      # Minimized player state
+│   │   └── VideoPlayerContext.tsx      # Video player state management
 │   │
 │   ├── constants/               # App constants
 │   │   ├── categories.ts               # Video categories config
@@ -220,7 +219,6 @@ videoapp/
 ```typescript
 // Using react-native-video:
 - Fullscreen mode (orientation lock)
-- Minimized mode (picture-in-picture overlay)
 - Custom controls (play/pause, seek, volume, fullscreen)
 - Progress bar with current time / duration
 - Playback state persistence
@@ -231,7 +229,6 @@ videoapp/
 - Use `react-native-video` library as required
 - Fallback to local video (`assets/video/broadchurch.mp4`) if API video unavailable
 - Handle fullscreen with `StatusBar` and orientation changes
-- Minimized player: floating overlay that persists across navigation
 
 ### 5.3 Player Controls
 
@@ -415,7 +412,7 @@ videoapp/
 - Main screen → Search → Video detail
 - Video detail → Add note → Verify persistence
 - Settings → Enable notifications → Verify scheduling
-- Video player → Minimize → Navigate → Player persists
+- Video playback and fullscreen mode functionality
 ```
 
 ### 8.4 Test Commands
@@ -479,7 +476,7 @@ YOUTUBE_API_KEY = your_api_key_here;
 2. **Core Infrastructure** (API client, types, storage)
 3. **Main Screen** (home layout, category lists)
 4. **Search** (search screen, debounced search)
-5. **Video Detail** (player, controls, fullscreen/minimized modes)
+5. **Video Detail** (player, controls, fullscreen mode)
 6. **Notes** (notes UI, persistence, timestamp linking)
 7. **Notifications** (scheduling, settings, permissions)
 8. **Testing** (unit, component, integration tests)
@@ -519,7 +516,6 @@ YOUTUBE_API_KEY = your_api_key_here;
 ### Video Detail Screen
 
 - [ ] Video player using react-native-video
-- [ ] Minimized player mode
 - [ ] Fullscreen player mode
 - [ ] Content from YouTube API
 - [ ] Fallback to local video file (assets/video/broadchurch.mp4)
