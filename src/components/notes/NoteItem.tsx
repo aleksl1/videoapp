@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet } from 'react-native';
+import type { Note } from '@/src/types/note';
 
 interface NoteItemProps {
-  note: any;
+  note: Note;
   onPress: () => void;
 }
 

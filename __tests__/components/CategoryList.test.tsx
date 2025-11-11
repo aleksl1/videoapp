@@ -15,7 +15,13 @@ jest.mock("expo-router", () => ({
 // Mock CategoryCardHorizontal component
 jest.mock("@/src/components/category/CategoryCardHorizontal", () => {
   const { View, Text, TouchableOpacity } = require("react-native");
-  return function CategoryCardHorizontal({ video, onPress }: any) {
+  return function CategoryCardHorizontal({
+    video,
+    onPress,
+  }: {
+    video: { id: string; title: string; publishedAt: string };
+    onPress: () => void;
+  }) {
     return (
       <TouchableOpacity testID={`video-card-${video.id}`} onPress={onPress}>
         <View>

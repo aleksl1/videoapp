@@ -1,7 +1,8 @@
 import { View, FlatList, StyleSheet } from 'react-native';
+import type { Note } from '@/src/types/note';
 
 interface NotesListProps {
-  notes: any[];
+  notes: Note[];
   onNotePress: (timestamp: number) => void;
   onNoteDelete: (noteId: string) => void;
 }

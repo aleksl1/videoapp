@@ -1,7 +1,8 @@
 import { View, FlatList, StyleSheet } from 'react-native';
+import type { VideoCardData } from '@/src/utils/youtube';
 
 interface SearchResultsProps {
-  results: any[];
+  results: VideoCardData[];
   onVideoPress: (videoId: string) => void;
 }
 

@@ -30,7 +30,13 @@ jest.mock("@/src/components/icons/AppIcon", () => {
 // Mock Button component
 jest.mock("@/src/components/common/Button", () => {
   const { TouchableOpacity, Text } = require("react-native");
-  return function Button({ title, onPress }: any) {
+  return function Button({
+    title,
+    onPress,
+  }: {
+    title: string;
+    onPress: () => void;
+  }) {
     return (
       <TouchableOpacity testID="guest-button" onPress={onPress}>
         <Text>{title}</Text>
