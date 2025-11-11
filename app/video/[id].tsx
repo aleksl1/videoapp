@@ -20,7 +20,12 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { SceneMap, TabBar, TabView } from "react-native-tab-view";
+import {
+  SceneMap,
+  TabBar,
+  TabView,
+  type TabBarProps,
+} from "react-native-tab-view";
 import Video, { VideoRef } from "react-native-video";
 
 // Notes Tab Component
@@ -123,15 +128,15 @@ export default function VideoDetailScreen() {
     notes: NotesRoute,
   });
 
-  const renderTabBar = (props: any) => (
+  const renderTabBar = (props: TabBarProps<{ key: string; title: string }>) => (
     <TabBar
       {...props}
       indicatorStyle={styles.indicator}
       style={styles.tabBar}
-      labelStyle={styles.tabLabel}
+      // labelStyle={styles.tabLabel}
       activeColor={COLORS.primary}
       inactiveColor={COLORS.primary}
-      inactiveTintColor={COLORS.primary}
+      // inactiveTintColor={COLORS.primary}
     />
   );
 
@@ -220,12 +225,7 @@ export default function VideoDetailScreen() {
       ]}
     >
       {isFullscreen && <StatusBar hidden={true} />}
-      <View
-        style={[
-          styles.headerSection,
-          isFullscreen && styles.fullscreenVideoSection,
-        ]}
-      >
+      <View style={[isFullscreen && styles.fullscreenVideoSection]}>
         <View
           style={[
             styles.videoContainer,
@@ -304,9 +304,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.black,
   },
-  headerSection: {
-    // flex: 0,
-  },
+
   fullscreenVideoSection: {
     flex: 1,
   },
@@ -342,6 +340,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     marginHorizontal: SPACING.md,
     flex: 0,
+    elevation: 0,
   },
   indicator: {
     backgroundColor: COLORS.primary,
@@ -372,7 +371,7 @@ const styles = StyleSheet.create({
   statisticsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.lg,
     marginTop: SPACING.xs,
   },
   channelInfo: {
