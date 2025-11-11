@@ -23,39 +23,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 import Video, { VideoRef } from "react-native-video";
 
-// Mock video data - in a real app, this would come from an API
-// TODO: Remove this once the API is implemented
-const mockVideoData: Record<
-  string,
-  { title: string; subtitle: string; videoUri: number }
-> = {
-  "1": {
-    title: "React Native Tutorial for Beginners",
-    subtitle: "Programming with Mosh",
-    videoUri: require("@/assets/video/broadchurch.mp4"),
-  },
-  "2": {
-    title: "Advanced React Patterns",
-    subtitle: "Academind",
-    videoUri: require("@/assets/video/broadchurch.mp4"),
-  },
-  "3": {
-    title: "TypeScript Best Practices",
-    subtitle: "Traversy Media",
-    videoUri: require("@/assets/video/broadchurch.mp4"),
-  },
-  "4": {
-    title: "JavaScript ES6 Features",
-    subtitle: "freeCodeCamp.org",
-    videoUri: require("@/assets/video/broadchurch.mp4"),
-  },
-  "5": {
-    title: "Building Mobile Apps with React Native",
-    subtitle: "Net Ninja",
-    videoUri: require("@/assets/video/broadchurch.mp4"),
-  },
-};
-
 // Notes Tab Component
 const NotesRoute = () => (
   <ScrollView style={styles.tabContent}>
@@ -67,14 +34,10 @@ const NotesRoute = () => (
 );
 
 export default function VideoDetailScreen() {
-  const { id, title, channelTitle, publishedAt, description } =
-    useLocalSearchParams<{
-      id: string;
-      title?: string;
-      channelTitle?: string;
-      publishedAt?: string;
-      description?: string;
-    }>();
+  const { id } = useLocalSearchParams<{
+    id: string;
+  }>();
+
   const insets = useSafeAreaInsets();
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
@@ -100,14 +63,11 @@ export default function VideoDetailScreen() {
 
   const videoDetails = videoDetailsData?.items?.[0];
 
-  const videoId = Array.isArray(id) ? id[0] : id;
-  const videoData = videoId ? mockVideoData[videoId] : null;
-
-  // Use params if available, fallback to mock data
-  const displayTitle = title || videoData?.title;
-  const displayChannelTitle = channelTitle || videoData?.subtitle;
-  const displayPublishedAt = publishedAt;
-  const displayDescription = description || videoDetails?.snippet?.description;
+  // Use data from API
+  const displayTitle = videoDetails?.snippet?.title;
+  const displayChannelTitle = videoDetails?.snippet?.channelTitle;
+  const displayPublishedAt = videoDetails?.snippet?.publishedAt;
+  const displayDescription = videoDetails?.snippet?.description;
   const displayViewCount = videoDetails?.statistics?.viewCount;
   const displayLikeCount = videoDetails?.statistics?.likeCount;
 
@@ -240,10 +200,14 @@ export default function VideoDetailScreen() {
     console.log("Airplay");
   };
 
-  if (!videoData) {
+  // Show loading state while fetching video details
+  if (isLoadingDetails) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Video not found</Text>
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading video details...</Text>
+        </View>
       </View>
     );
   }
@@ -270,7 +234,7 @@ export default function VideoDetailScreen() {
         >
           <Video
             ref={videoRef}
-            source={videoData.videoUri as any}
+            source={require("@/assets/video/broadchurch.mp4")}
             style={styles.video}
             paused={paused}
             muted={muted}
@@ -315,7 +279,9 @@ export default function VideoDetailScreen() {
 
       {/* TabView Component - Takes up remaining space */}
       {!isFullscreen && (
-        <View style={styles.tabViewContainer}>
+        <View
+          style={[styles.tabViewContainer, { paddingBottom: insets.bottom }]}
+        >
           <TabView
             navigationState={{ index, routes }}
             renderScene={renderScene}
@@ -372,14 +338,10 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
     paddingTop: SPACING.md,
   },
-  errorText: {
-    ...fontConfig.md,
-    color: COLORS.outline,
-    textAlign: "center",
-  },
   tabBar: {
     backgroundColor: COLORS.white,
     marginHorizontal: SPACING.md,
+    flex: 0,
   },
   indicator: {
     backgroundColor: COLORS.primary,
@@ -420,5 +382,15 @@ const styles = StyleSheet.create({
   },
   channelInfo: {
     margin: SPACING.md,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    ...fontConfig.md,
+    color: COLORS.primary,
+    marginTop: SPACING.md,
   },
 });
