@@ -15,6 +15,7 @@ axiosInstance.interceptors.response.use(
     if (error.response) {
       const { status } = error.response;
       if (status === 403) {
+        alert("YouTube API quota exceeded or invalid API key"); //todo: better error handling
         console.error("YouTube API quota exceeded or invalid API key");
       } else if (status === 400) {
         console.error("Invalid YouTube API request");
