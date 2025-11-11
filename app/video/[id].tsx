@@ -71,7 +71,6 @@ export default function VideoDetailScreen() {
   // Use data from API
   const displayTitle = videoDetails?.snippet?.title;
   const displayChannelTitle = videoDetails?.snippet?.channelTitle;
-  const displayPublishedAt = videoDetails?.snippet?.publishedAt;
   const displayDescription = videoDetails?.snippet?.description;
   const displayViewCount = videoDetails?.statistics?.viewCount;
   const displayLikeCount = videoDetails?.statistics?.likeCount;

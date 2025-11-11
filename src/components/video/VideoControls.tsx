@@ -106,15 +106,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const handleSeekStart = () => {
-    setIsSeeking(true);
-    onSeekStart();
-  };
-
-  const handleSeekChange = (value: number) => {
-    setSeekTime(value);
-  };
-
   const handleSeekEnd = (value: number) => {
     setIsSeeking(false);
     setSeekTime(value);

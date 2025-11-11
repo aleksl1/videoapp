@@ -184,7 +184,6 @@ export default function SearchScreen() {
       submittedQuery,
       totalResults,
       handleSortPress,
-      getSortLabel,
       sortOrder,
     ]
   );
