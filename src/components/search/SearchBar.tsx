@@ -1,4 +1,3 @@
-import { text } from "@/assets/text/text";
 import {
   BORDER_RADIUS,
   COLORS,
@@ -41,7 +40,7 @@ export default function SearchBar({
           value={value}
           onChangeText={onChangeText}
           onSubmitEditing={onSubmit}
-          placeholder={text.search_bar_placeholder}
+          placeholder="Search videos"
           returnKeyType="search"
           placeholderTextColor={COLORS.outline}
           editable={editable}
