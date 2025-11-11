@@ -19,6 +19,7 @@ import LeftArrowIcon from "../icons/videoControls/LeftArrowIcon";
 import PauseIcon from "../icons/videoControls/PauseIcon";
 import PlayIcon from "../icons/videoControls/PlayIcon";
 import VolumeIcon from "../icons/videoControls/VolumeIcon";
+import VolumeMutedIcon from "../icons/videoControls/VolumeMutedIcon";
 
 interface VideoControlsProps {
   paused: boolean;
@@ -146,11 +147,15 @@ const VideoControls: React.FC<VideoControlsProps> = ({
 
             <View style={styles.topRightControls}>
               <TouchableOpacity style={styles.iconButton} onPress={onMute}>
-                <VolumeIcon
-                  width={24}
-                  height={24}
-                  stroke={muted ? COLORS.error : COLORS.white}
-                />
+                {muted ? (
+                  <VolumeMutedIcon
+                    width={24}
+                    height={24}
+                    stroke={COLORS.white}
+                  />
+                ) : (
+                  <VolumeIcon width={24} height={24} stroke={COLORS.white} />
+                )}
               </TouchableOpacity>
               {onAirplay && (
                 <TouchableOpacity style={styles.iconButton} onPress={onAirplay}>

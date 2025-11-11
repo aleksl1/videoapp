@@ -202,6 +202,7 @@ export default function VideoDetailScreen() {
   };
 
   const handleAirplay = () => {
+    alert("Airplay is not supported yet");
     console.log("Airplay");
   };
 
