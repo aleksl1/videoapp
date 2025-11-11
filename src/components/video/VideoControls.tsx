@@ -1,6 +1,6 @@
 import { COLORS, fontConfig, SPACING } from "@/src/constants/theme";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Animated,
   GestureResponderEvent,
@@ -46,8 +46,6 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   isFullscreen = false,
   onPlayPause,
   onMute,
-  onSeek,
-  onSeekStart,
   onSeekEnd,
   onBackward,
   onForward,
@@ -67,6 +65,14 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     }
   }, [currentTime, isSeeking]);
 
+  const hideControls = useCallback(() => {
+    Animated.timing(opacity, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => setShowControls(false));
+  }, [opacity, setShowControls]);
+
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
 
@@ -77,15 +83,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
     }
 
     return () => clearTimeout(timeout);
-  }, [showControls, paused]);
-
-  const hideControls = () => {
-    Animated.timing(opacity, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => setShowControls(false));
-  };
+  }, [showControls, paused, hideControls]);
 
   const toggleControls = () => {
     if (showControls) {
