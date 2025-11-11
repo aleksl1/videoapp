@@ -224,7 +224,9 @@ export default function SearchScreen() {
       return (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            No results found for &ldquo;{submittedQuery}&rdquo;
+            {submittedQuery.length > 0 && submittedQuery === searchQuery
+              ? "No results found"
+              : "Press search on keyboard to find videos"}
           </Text>
         </View>
       );

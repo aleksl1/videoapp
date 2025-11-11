@@ -27,7 +27,7 @@ import Video, { VideoRef } from "react-native-video";
 const NotesRoute = () => (
   <ScrollView style={styles.tabContent}>
     <Text style={styles.sectionTitle}>My Notes</Text>
-    <Text style={styles.placeholder}>
+    <Text style={styles.description}>
       No notes yet. Notes functionality will be implemented here.
     </Text>
   </ScrollView>
@@ -78,7 +78,7 @@ export default function VideoDetailScreen() {
       {displayDescription ? (
         <Text style={styles.description}>{displayDescription}</Text>
       ) : (
-        <Text style={styles.placeholder}>No description available.</Text>
+        <Text style={styles.description}>No description available.</Text>
       )}
       <Text style={styles.sectionTitle}>Statistics</Text>
       {isLoadingDetails ? (
@@ -368,11 +368,6 @@ const styles = StyleSheet.create({
     lineHeight: 12,
     color: COLORS.primary,
     marginBottom: SPACING.md,
-  },
-  placeholder: {
-    ...fontConfig.md,
-    color: COLORS.outline,
-    fontStyle: "italic",
   },
   statisticsContainer: {
     flexDirection: "row",
